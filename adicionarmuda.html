@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Muda - AgroAssist</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 Adicionar Muda</h1>
+        </div>
+
+        <div class="form-group">
+            <label>🌿 Nome da Muda</label>
+            <input type="text" id="nomeMuda" placeholder="Ex: Tomate Cereja">
+        </div>
+
+        <div class="form-group">
+            <label>🔢 Quantidade</label>
+            <input type="number" id="quantidadeMuda" placeholder="Ex: 10">
+        </div>
+
+        <div class="form-group">
+            <label>📅 Data de plantio</label>
+            <input type="date" id="dataMuda">
+        </div>
+
+        <div class="form-group">
+            <label>📂 Categoria</label>
+            <select id="categoriaMuda">
+                <option value="hortalica">🥬 Hortaliça</option>
+                <option value="frutifera">🍅 Frutífera</option>
+                <option value="tempero">🌿 Tempero</option>
+                <option value="grao">🌾 Grão</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>📝 Observações</label>
+            <textarea id="obsMuda" rows="3" placeholder="Ex: Estufa, sol pleno..."></textarea>
+        </div>
+
+        <input type="hidden" id="editIndexMuda" value="">
+
+        <button class="btn" onclick="salvarMuda()">💾 Salvar</button>
+        <br><br>
+        <a href="index.html" class="voltar">⬅️ Voltar</a>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="script.js"></script>
+    <script>
+        window.onload = function() {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataMuda').value = hoje;
+
+            const params = new URLSearchParams(window.location.search);
+            const planta = params.get('planta');
+            if (planta) {
+                document.getElementById('nomeMuda').value = planta;
+            }
+
+            const editIndex = params.get('edit');
+            if (editIndex !== null) {
+                document.getElementById('editIndexMuda').value = editIndex;
+                const nome = params.get('nome') || '';
+                const quantidade = params.get('quantidade') || '';
+                const data = params.get('data') || '';
+                const obs = params.get('obs') || '';
+                const categoria = params.get('categoria') || '';
+                document.getElementById('nomeMuda').value = decodeURIComponent(nome);
+                document.getElementById('quantidadeMuda').value = quantidade;
+                document.getElementById('dataMuda').value = data;
+                document.getElementById('obsMuda').value = decodeURIComponent(obs);
+                if (categoria) document.getElementById('categoriaMuda').value = categoria;
+                document.querySelector('h1').textContent = '✏️ Editar Muda';
+                document.querySelector('.btn').textContent = '💾 Atualizar';
+            }
+        };
+    </script>
+</body>
+</html>

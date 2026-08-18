@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroAssist</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <h1>🌿 AgroAssist</h1>
+        </div>
+        <p class="subtitle">🌱 Do campo para o seu bolso. Acompanhe suas mudas, plantações e o clima com inteligência.</p>
+
+        <!-- ===== DICA DO DIA ===== -->
+        <div class="card" id="card-dica" style="border-left: 6px solid #f9a825;">
+            <h2>💡 Dica do Dia</h2>
+            <p id="dica-do-dia" style="font-size: 1.1rem; font-weight: 500; color: #1e4a2b;">Carregando dica...</p>
+        </div>
+
+        <!-- 🌙 Fase da Lua -->
+        <div class="card" id="card-lua">
+            <h2>🌙 Fase da Lua Hoje</h2>
+            <div id="fase-lua">
+                <p style="font-size: 1.6rem; font-weight: 700;" id="fase-nome">Carregando...</p>
+                <p id="fase-recomendacao" style="color: #4a7c59; font-style: italic;">O que fazer hoje?</p>
+            </div>
+        </div>
+
+        <!-- 🌧️ Previsão do Tempo -->
+        <div class="card" id="card-clima">
+            <h2>🌧️ Previsão do Tempo</h2>
+            <div id="previsao-clima">
+                <p>📍 <span id="cidade-clima">Sua cidade</span></p>
+                <p>🌡️ <span id="temperatura">--</span>°C</p>
+                <p>☁️ <span id="descricao-clima">--</span></p>
+                <div id="alertas-clima" style="margin-top: 8px;"></div>
+            </div>
+        </div>
+
+        <!-- 📅 Calendário de Plantio por Época -->
+        <div class="card" id="card-plantio">
+            <h2>📅 O que plantar agora?</h2>
+            <div id="lista-plantio">
+                <p>Carregando recomendações...</p>
+            </div>
+        </div>
+
+        <!-- 🔍 Pesquisa -->
+        <div class="card">
+            <h2>🔍 Pesquisar Planta</h2>
+            <div class="pesquisa">
+                <input id="campoPesquisa" placeholder="Digite o nome da planta ou observação..." onkeydown="if(event.key==='Enter') pesquisarAvancado()">
+                <button onclick="pesquisarAvancado()">🔍 Pesquisar</button>
+            </div>
+        </div>
+
+        <!-- Recomendadas -->
+        <div class="card">
+            <h2>🍃 Recomendadas para esta época</h2>
+            <ul>
+                <li><a href="tomate.html">🍅 Tomate</a></li>
+                <li><a href="alface.html">🥬 Alface</a></li>
+                <li><a href="pimenta.html">🌶 Pimenta</a></li>
+                <li><a href="couve.html">🍀 Couve</a></li>
+                <li><a href="cebolinha.html">🧅 Cebolinha</a></li>
+            </ul>
+        </div>
+
+        <!-- 📊 Gráficos -->
+        <div class="card">
+            <h2>📊 Estatísticas de Produção</h2>
+            <canvas id="graficoMudas" width="400" height="200"></canvas>
+            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" onclick="exportarCSV('mudas')">📥 Exportar Mudas (CSV)</button>
+                <button class="btn btn-secondary" onclick="exportarCSV('plantacoes')">📥 Exportar Plantações (CSV)</button>
+            </div>
+        </div>
+
+        <!-- Minhas Mudas -->
+        <div class="card">
+            <h2>
+                🌱 Minhas Mudas
+                <span class="badge" id="contadorMudas">0</span>
+            </h2>
+            <div id="lista-mudas"></div>
+            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="adicionarmuda.html" class="btn">➕ Adicionar Muda</a>
+                <button class="btn btn-danger" onclick="limparMudas()">🗑️ Limpar tudo</button>
+            </div>
+        </div>
+
+        <!-- Minhas Plantações -->
+        <div class="card">
+            <h2>
+                🌿 Minhas Plantações
+                <span class="badge" id="contadorPlantacoes">0</span>
+            </h2>
+            <div id="lista-plantacoes"></div>
+            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="adicionarplant.html" class="btn">➕ Adicionar Plantação</a>
+                <button class="btn btn-danger" onclick="limparPlantacoes()">🗑️ Limpar tudo</button>
+            </div>
+        </div>
+
+        <!-- Sobre -->
+        <div style="text-align: center; margin-top: 16px;">
+            <a href="sobre.html" style="color: #2e7d32; text-decoration: none; font-weight: 500;">📖 Sobre o AgroAssist</a>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
