@@ -10,19 +10,24 @@
 </head>
 <body>
     <div class="container">
-        <!-- Cabeçalho -->
+        <!-- Cabeçalho com login -->
         <div class="header">
             <h1>🌿 AgroAssist</h1>
+            <div id="user-area">
+                <button onclick="loginComGoogle()" id="btnLogin" class="btn btn-secondary">🔑 Login com Google</button>
+                <button onclick="logout()" id="btnLogout" style="display:none;" class="btn btn-danger">🚪 Sair</button>
+                <span id="userEmail" style="margin-left: 10px; font-weight: 600;"></span>
+            </div>
         </div>
         <p class="subtitle">🌱 Do campo para o seu bolso. Acompanhe suas mudas, plantações e o clima com inteligência.</p>
 
-        <!-- ===== DICA DO DIA ===== -->
+        <!-- Dica do Dia -->
         <div class="card" id="card-dica" style="border-left: 6px solid #f9a825;">
             <h2>💡 Dica do Dia</h2>
             <p id="dica-do-dia" style="font-size: 1.1rem; font-weight: 500; color: #1e4a2b;">Carregando dica...</p>
         </div>
 
-        <!-- 🌙 Fase da Lua -->
+        <!-- Fase da Lua -->
         <div class="card" id="card-lua">
             <h2>🌙 Fase da Lua Hoje</h2>
             <div id="fase-lua">
@@ -31,7 +36,7 @@
             </div>
         </div>
 
-        <!-- 🌧️ Previsão do Tempo -->
+        <!-- Previsão do Tempo -->
         <div class="card" id="card-clima">
             <h2>🌧️ Previsão do Tempo</h2>
             <div id="previsao-clima">
@@ -42,7 +47,7 @@
             </div>
         </div>
 
-        <!-- 📅 Calendário de Plantio por Época -->
+        <!-- Calendário de Plantio -->
         <div class="card" id="card-plantio">
             <h2>📅 O que plantar agora?</h2>
             <div id="lista-plantio">
@@ -50,7 +55,7 @@
             </div>
         </div>
 
-        <!-- 🔍 Pesquisa -->
+        <!-- Pesquisa -->
         <div class="card">
             <h2>🔍 Pesquisar Planta</h2>
             <div class="pesquisa">
@@ -71,7 +76,7 @@
             </ul>
         </div>
 
-        <!-- 📊 Gráficos -->
+        <!-- Gráficos -->
         <div class="card">
             <h2>📊 Estatísticas de Produção</h2>
             <canvas id="graficoMudas" width="400" height="200"></canvas>
@@ -115,6 +120,28 @@
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+
+    <!-- ===== FIREBASE (CDN) ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+
+    <script>
+        // COLE SEU firebaseConfig AQUI
+        const firebaseConfig = {
+            apiKey: "AIzaSyB38cdIUWfhYBsZ5ws98OJoXMb1giTimsQ",
+            authDomain: "agroassist-70d02.firebaseapp.com",
+            projectId: "agroassist-70d02",
+            storageBucket: "agroassist-70d02.firebasestorage.app",
+            messagingSenderId: "216659418233",
+            appId: "1:216659418233:web:0564da8d06842eef7408a8",
+            measurementId: "G-7E0538E971"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
 
     <script src="script.js"></script>
 </body>

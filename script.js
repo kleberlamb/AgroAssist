@@ -1,7 +1,7 @@
 // ============================================
 // CONFIGURAÇÃO
 // ============================================
-const API_KEY = 'SUA_CHAVE_AQUI';
+const API_KEY = '92fd8bb5c88b1d619662464c0735b4be';
 const CIDADE = 'Belo Horizonte';
 const PAIS = 'BR';
 
@@ -262,9 +262,54 @@ function pesquisarAvancado() {
 }
 
 // ============================================
-// MUDAS (COM CATEGORIA E EDIÇÃO)
+// FIREBASE AUTH (login)
 // ============================================
-function salvarMuda() {
+
+function loginComGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+        .then(() => {
+            mostrarToast('✅ Login realizado com sucesso!', '#2e7d32');
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro no login: ' + erro.message, '#c62828');
+        });
+}
+
+function logout() {
+    firebase.auth().signOut().then(() => {
+        mostrarToast('🔓 Logout realizado', '#5d6d5d');
+    });
+}
+
+// Monitora o estado do usuário
+firebase.auth().onAuthStateChanged(user => {
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const userEmail = document.getElementById('userEmail');
+
+    if (user) {
+        btnLogin.style.display = 'none';
+        btnLogout.style.display = 'inline-block';
+        userEmail.textContent = '👤 ' + user.email;
+        // Carrega os dados do Firestore
+        carregarMudasFirestore();
+        carregarPlantacoesFirestore();
+    } else {
+        btnLogin.style.display = 'inline-block';
+        btnLogout.style.display = 'none';
+        userEmail.textContent = '';
+        // Mostra mensagem de bloqueio
+        document.getElementById('lista-mudas').innerHTML = '<p class="empty-message">🔒 Faça login para ver suas mudas.</p>';
+        document.getElementById('lista-plantacoes').innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
+    }
+});
+
+// ============================================
+// FIREBASE FIRESTORE (salvar/carregar dados)
+// ============================================
+
+function salvarMudaFirestore() {
     const nome = document.getElementById('nomeMuda').value.trim();
     const quantidade = document.getElementById('quantidadeMuda').value.trim();
     const data = document.getElementById('dataMuda').value;
@@ -276,102 +321,126 @@ function salvarMuda() {
         return;
     }
 
-    const plantaInfo = Object.values(plantasDB).find(p => p.nome.toLowerCase() === nome.toLowerCase());
-    const diasColheita = plantaInfo ? plantaInfo.diasColheita : 90;
-
-    const dataPlantio = new Date(data);
-    const dataColheita = new Date(dataPlantio);
-    dataColheita.setDate(dataColheita.getDate() + diasColheita);
-    const dataColheitaStr = dataColheita.toISOString().split('T')[0];
-
-    let mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    const editIndex = document.getElementById('editIndexMuda')?.value;
-    if (editIndex !== undefined && editIndex !== '') {
-        mudas[editIndex] = { nome, quantidade, data, obs, categoria, diasColheita, dataColheita: dataColheitaStr };
-        localStorage.setItem('mudas', JSON.stringify(mudas));
-        mostrarToast('✅ Muda atualizada!', '#2e7d32');
-    } else {
-        mudas.push({ nome, quantidade, data, obs, categoria, diasColheita, dataColheita: dataColheitaStr });
-        localStorage.setItem('mudas', JSON.stringify(mudas));
-        mostrarToast('✅ Muda cadastrada!', '#2e7d32');
-    }
-    setTimeout(() => window.location.href = 'index.html', 600);
-}
-
-function carregarMudas() {
-    const container = document.getElementById('lista-mudas');
-    if (!container) return;
-    let mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    const contador = document.getElementById('contadorMudas');
-    if (contador) contador.textContent = mudas.length;
-
-    if (mudas.length === 0) {
-        container.innerHTML = '<p class="empty-message">🌱 Você ainda não tem mudas.</p>';
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        mostrarToast('⚠️ Faça login primeiro!', '#c62828');
         return;
     }
 
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    let html = '';
-    mudas.forEach((m, i) => {
-        const dataPlantio = new Date(m.data);
-        const dataColheita = new Date(m.dataColheita);
-        const diasDecorridos = Math.floor((hoje - dataPlantio) / (1000 * 60 * 60 * 24));
-        const diasRestantes = Math.max(0, m.diasColheita - diasDecorridos);
-        const progresso = Math.min(100, Math.round((diasDecorridos / m.diasColheita) * 100));
-        const cat = categorias[m.categoria] || '🌱';
-        let statusCor = '#2e7d32';
-        let statusTexto = '🌱 No prazo';
-        if (diasRestantes <= 5 && diasRestantes > 0) {
-            statusCor = '#ff9800';
-            statusTexto = '⚠️ Próximo da colheita';
-        }
-        if (diasRestantes === 0) {
-            statusCor = '#c62828';
-            statusTexto = '🔴 COLHEITA HOJE!';
-        }
-        if (diasDecorridos > m.diasColheita) {
-            statusCor = '#c62828';
-            statusTexto = '❌ Colheita atrasada!';
-        }
+    const muda = { 
+        nome, 
+        quantidade, 
+        data, 
+        obs, 
+        categoria, 
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
+    };
 
-        html += `
-            <div class="card-item" style="border-left-color: ${statusCor};">
-                <div class="info">
-                    <h3>${cat} ${m.nome}</h3>
-                    <p>📦 ${m.quantidade} unidade(s)</p>
-                    <p>📅 Plantio: ${m.data}</p>
-                    <p>🍅 Colheita prevista: ${m.dataColheita}</p>
-                    <p style="color: ${statusCor}; font-weight: 600;">${statusTexto}</p>
-                    ${m.obs ? `<p class="obs">📝 ${m.obs}</p>` : ''}
-                    <div style="margin-top: 6px; background: #e0e0e0; border-radius: 20px; height: 10px; width: 100%;">
-                        <div style="background: ${statusCor}; height: 10px; border-radius: 20px; width: ${progresso}%;"></div>
+    db.collection('usuarios').doc(user.uid).collection('mudas').add(muda)
+        .then(() => {
+            mostrarToast('✅ Muda salva na nuvem!', '#2e7d32');
+            window.location.href = 'index.html';
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao salvar: ' + erro.message, '#c62828');
+        });
+}
+
+function carregarMudasFirestore() {
+    const container = document.getElementById('lista-mudas');
+    if (!container) return;
+
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        container.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas mudas.</p>';
+        return;
+    }
+
+    db.collection('usuarios').doc(user.uid).collection('mudas').orderBy('criadoEm', 'desc').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="empty-message">🌱 Você ainda não tem mudas.</p>';
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach(doc => {
+                const m = doc.data();
+                const cat = categorias[m.categoria] || '🌱';
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                const dataPlantio = new Date(m.data);
+                const diasDecorridos = Math.floor((hoje - dataPlantio) / (1000 * 60 * 60 * 24));
+                const diasColheita = m.diasColheita || 90;
+                const diasRestantes = Math.max(0, diasColheita - diasDecorridos);
+                const progresso = Math.min(100, Math.round((diasDecorridos / diasColheita) * 100));
+                let statusCor = '#2e7d32';
+                let statusTexto = '🌱 No prazo';
+                if (diasRestantes <= 5 && diasRestantes > 0) {
+                    statusCor = '#ff9800';
+                    statusTexto = '⚠️ Próximo da colheita';
+                }
+                if (diasRestantes === 0) {
+                    statusCor = '#c62828';
+                    statusTexto = '🔴 COLHEITA HOJE!';
+                }
+                if (diasDecorridos > diasColheita) {
+                    statusCor = '#c62828';
+                    statusTexto = '❌ Colheita atrasada!';
+                }
+
+                html += `
+                    <div class="card-item" style="border-left-color: ${statusCor};">
+                        <div class="info">
+                            <h3>${cat} ${m.nome}</h3>
+                            <p>📦 ${m.quantidade} unidade(s)</p>
+                            <p>📅 Plantio: ${m.data}</p>
+                            <p style="color: ${statusCor}; font-weight: 600;">${statusTexto}</p>
+                            ${m.obs ? `<p class="obs">📝 ${m.obs}</p>` : ''}
+                            <div style="margin-top: 6px; background: #e0e0e0; border-radius: 20px; height: 10px; width: 100%;">
+                                <div style="background: ${statusCor}; height: 10px; border-radius: 20px; width: ${progresso}%;"></div>
+                            </div>
+                            <p style="font-size: 0.8rem; color: #555;">${progresso}% do ciclo</p>
+                        </div>
+                        <div class="actions">
+                            <button onclick="editarMuda('${doc.id}')">✏️ Editar</button>
+                            <button onclick="removerMudaFirestore('${doc.id}')">❌ Remover</button>
+                        </div>
                     </div>
-                    <p style="font-size: 0.8rem; color: #555;">${progresso}% do ciclo</p>
-                </div>
-                <div class="actions">
-                    <button onclick="editarMuda(${i})">✏️ Editar</button>
-                    <button onclick="removerMuda(${i})">❌ Remover</button>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
+                `;
+            });
+            container.innerHTML = html;
+            atualizarContadoresFirestore();
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao carregar: ' + erro.message, '#c62828');
+        });
 }
 
-function editarMuda(index) {
-    const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    const m = mudas[index];
-    if (!m) return;
-    // Redireciona para o formulário com os dados preenchidos
-    const url = `adicionarmuda.html?edit=${index}&nome=${encodeURIComponent(m.nome)}&quantidade=${m.quantidade}&data=${m.data}&obs=${encodeURIComponent(m.obs || '')}&categoria=${m.categoria || ''}`;
-    window.location.href = url;
+function removerMudaFirestore(id) {
+    if (!confirm('Remover esta muda?')) return;
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    db.collection('usuarios').doc(user.uid).collection('mudas').doc(id).delete()
+        .then(() => {
+            mostrarToast('🗑️ Muda removida', '#5d6d5d');
+            carregarMudasFirestore();
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao remover: ' + erro.message, '#c62828');
+        });
+}
+
+function editarMuda(id) {
+    // Redireciona para o formulário com o ID da muda
+    window.location.href = `adicionarmuda.html?edit=${id}`;
 }
 
 // ============================================
-// PLANTAÇÕES (COM CATEGORIA E EDIÇÃO)
+// PLANTAÇÕES FIRESTORE
 // ============================================
-function salvarPlantacao() {
+
+function salvarPlantacaoFirestore() {
     const nome = document.getElementById('nomePlanta').value.trim();
     const quantidade = document.getElementById('quantidadePlanta').value.trim();
     const data = document.getElementById('dataTransplante').value;
@@ -383,120 +452,138 @@ function salvarPlantacao() {
         return;
     }
 
-    let plantacoes = JSON.parse(localStorage.getItem('plantacoes')) || [];
-    const editIndex = document.getElementById('editIndexPlantacao')?.value;
-    if (editIndex !== undefined && editIndex !== '') {
-        plantacoes[editIndex] = { nome, quantidade, data, obs, categoria };
-        localStorage.setItem('plantacoes', JSON.stringify(plantacoes));
-        mostrarToast('✅ Plantação atualizada!', '#2e7d32');
-    } else {
-        plantacoes.push({ nome, quantidade, data, obs, categoria });
-        localStorage.setItem('plantacoes', JSON.stringify(plantacoes));
-        mostrarToast('✅ Plantação cadastrada!', '#2e7d32');
-    }
-    setTimeout(() => window.location.href = 'index.html', 600);
-}
-
-function carregarPlantacoes() {
-    const container = document.getElementById('lista-plantacoes');
-    if (!container) return;
-    let plantacoes = JSON.parse(localStorage.getItem('plantacoes')) || [];
-    const contador = document.getElementById('contadorPlantacoes');
-    if (contador) contador.textContent = plantacoes.length;
-
-    if (plantacoes.length === 0) {
-        container.innerHTML = '<p class="empty-message">🌿 Você ainda não tem plantações.</p>';
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        mostrarToast('⚠️ Faça login primeiro!', '#c62828');
         return;
     }
 
-    let html = '';
-    plantacoes.forEach((p, i) => {
-        const cat = categorias[p.categoria] || '🌿';
-        html += `
-            <div class="card-item">
-                <div class="info">
-                    <h3>${cat} ${p.nome}</h3>
-                    <p>📦 ${p.quantidade} unidade(s)</p>
-                    <p>📅 Transplante: ${p.data}</p>
-                    ${p.obs ? `<p class="obs">📝 ${p.obs}</p>` : ''}
-                </div>
-                <div class="actions">
-                    <button onclick="editarPlantacao(${i})">✏️ Editar</button>
-                    <button onclick="removerPlantacao(${i})">❌ Remover</button>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
+    const plantacao = { 
+        nome, 
+        quantidade, 
+        data, 
+        obs, 
+        categoria, 
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
+    };
+
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').add(plantacao)
+        .then(() => {
+            mostrarToast('✅ Plantação salva na nuvem!', '#2e7d32');
+            window.location.href = 'index.html';
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao salvar: ' + erro.message, '#c62828');
+        });
 }
 
-function editarPlantacao(index) {
-    const plantacoes = JSON.parse(localStorage.getItem('plantacoes')) || [];
-    const p = plantacoes[index];
-    if (!p) return;
-    const url = `adicionarplant.html?edit=${index}&nome=${encodeURIComponent(p.nome)}&quantidade=${p.quantidade}&data=${p.data}&obs=${encodeURIComponent(p.obs || '')}&categoria=${p.categoria || ''}`;
-    window.location.href = url;
+function carregarPlantacoesFirestore() {
+    const container = document.getElementById('lista-plantacoes');
+    if (!container) return;
+
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        container.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
+        return;
+    }
+
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').orderBy('criadoEm', 'desc').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="empty-message">🌿 Você ainda não tem plantações.</p>';
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                const cat = categorias[p.categoria] || '🌿';
+                html += `
+                    <div class="card-item">
+                        <div class="info">
+                            <h3>${cat} ${p.nome}</h3>
+                            <p>📦 ${p.quantidade} unidade(s)</p>
+                            <p>📅 Transplante: ${p.data}</p>
+                            ${p.obs ? `<p class="obs">📝 ${p.obs}</p>` : ''}
+                        </div>
+                        <div class="actions">
+                            <button onclick="editarPlantacao('${doc.id}')">✏️ Editar</button>
+                            <button onclick="removerPlantacaoFirestore('${doc.id}')">❌ Remover</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            atualizarContadoresFirestore();
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao carregar: ' + erro.message, '#c62828');
+        });
 }
 
-// ============================================
-// REMOVER FUNÇÕES
-// ============================================
-function removerMuda(index) {
-    if (!confirm('Remover esta muda?')) return;
-    let mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    mudas.splice(index, 1);
-    localStorage.setItem('mudas', JSON.stringify(mudas));
-    carregarMudas();
-    atualizarContadores();
-    atualizarGrafico();
-    mostrarToast('🗑️ Muda removida', '#5d6d5d');
-}
-
-function removerPlantacao(index) {
+function removerPlantacaoFirestore(id) {
     if (!confirm('Remover esta plantação?')) return;
-    let plantacoes = JSON.parse(localStorage.getItem('plantacoes')) || [];
-    plantacoes.splice(index, 1);
-    localStorage.setItem('plantacoes', JSON.stringify(plantacoes));
-    carregarPlantacoes();
-    atualizarContadores();
-    mostrarToast('🗑️ Plantação removida', '#5d6d5d');
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').doc(id).delete()
+        .then(() => {
+            mostrarToast('🗑️ Plantação removida', '#5d6d5d');
+            carregarPlantacoesFirestore();
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao remover: ' + erro.message, '#c62828');
+        });
 }
 
+function editarPlantacao(id) {
+    window.location.href = `adicionarplant.html?edit=${id}`;
+}
+
+// ============================================
+// CONTADORES FIRESTORE
+// ============================================
+function atualizarContadoresFirestore() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    db.collection('usuarios').doc(user.uid).collection('mudas').get()
+        .then(snapshot => {
+            const cM = document.getElementById('contadorMudas');
+            if (cM) cM.textContent = snapshot.size;
+        });
+
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').get()
+        .then(snapshot => {
+            const cP = document.getElementById('contadorPlantacoes');
+            if (cP) cP.textContent = snapshot.size;
+        });
+}
+
+// ============================================
+// LIMPAR TUDO (LOCALSTORAGE)
+// ============================================
 function limparMudas() {
     if (!confirm('⚠️ Apagar TODAS as mudas?')) return;
     localStorage.removeItem('mudas');
-    carregarMudas();
-    atualizarContadores();
-    atualizarGrafico();
+    carregarMudasFirestore();
     mostrarToast('🧹 Mudas removidas', '#c62828');
 }
 
 function limparPlantacoes() {
     if (!confirm('⚠️ Apagar TODAS as plantações?')) return;
     localStorage.removeItem('plantacoes');
-    carregarPlantacoes();
-    atualizarContadores();
+    carregarPlantacoesFirestore();
     mostrarToast('🧹 Plantações removidas', '#c62828');
-}
-
-function atualizarContadores() {
-    const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    const plantacoes = JSON.parse(localStorage.getItem('plantacoes')) || [];
-    const cM = document.getElementById('contadorMudas');
-    const cP = document.getElementById('contadorPlantacoes');
-    if (cM) cM.textContent = mudas.length;
-    if (cP) cP.textContent = plantacoes.length;
 }
 
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
 window.onload = function() {
-    carregarMudas();
-    carregarPlantacoes();
     calcularFaseLua();
     buscarClima();
     carregarPlantioRecomendado();
     mostrarDica();
+    // Gráficos ainda usam localStorage (depois migramos)
     atualizarGrafico();
 };
