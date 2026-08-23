@@ -6,14 +6,34 @@ const CIDADE = 'Belo Horizonte';
 const PAIS = 'BR';
 
 // ============================================
-// BANCO DE DADOS DAS PLANTAS
+// BANCO DE DADOS DAS PLANTAS (25 plantas)
 // ============================================
 const plantasDB = {
     tomate: { nome: 'Tomate', diasColheita: 90, epoca: [8, 9, 10, 11, 12, 1, 2], categoria: 'frutifera' },
     alface: { nome: 'Alface', diasColheita: 60, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
     pimenta: { nome: 'Pimenta', diasColheita: 100, epoca: [9, 10, 11, 12, 1, 2, 3], categoria: 'frutifera' },
     couve: { nome: 'Couve', diasColheita: 75, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
-    cebolinha: { nome: 'Cebolinha', diasColheita: 70, epoca: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'tempero' }
+    cebolinha: { nome: 'Cebolinha', diasColheita: 70, epoca: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'tempero' },
+    abobora: { nome: 'Abóbora', diasColheita: 100, epoca: [9, 10, 11, 12, 1, 2, 3], categoria: 'frutifera' },
+    alho: { nome: 'Alho', diasColheita: 100, epoca: [2, 3, 4, 5, 6], categoria: 'tempero' },
+    batata: { nome: 'Batata', diasColheita: 100, epoca: [4, 5], categoria: 'hortalica' },
+    beterraba: { nome: 'Beterraba', diasColheita: 70, epoca: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'hortalica' },
+    brocolis: { nome: 'Brócolis', diasColheita: 80, epoca: [2, 3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
+    cebola: { nome: 'Cebola', diasColheita: 150, epoca: [2, 3, 4, 5], categoria: 'hortalica' },
+    cenoura: { nome: 'Cenoura', diasColheita: 90, epoca: [3, 4, 5, 6, 7, 10, 11, 12], categoria: 'hortalica' },
+    espinafre: { nome: 'Espinafre', diasColheita: 60, epoca: [2, 3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
+    feijao: { nome: 'Feijão', diasColheita: 80, epoca: [9, 10, 11], categoria: 'grao' },
+    gengibre: { nome: 'Gengibre', diasColheita: 240, epoca: [9, 10, 11, 12], categoria: 'tempero' },
+    goiaba: { nome: 'Goiaba', diasColheita: 450, epoca: [9, 10, 11], categoria: 'frutifera' },
+    laranja: { nome: 'Laranja', diasColheita: 900, epoca: [10, 11, 12, 1, 2, 3], categoria: 'frutifera' },
+    manga: { nome: 'Manga', diasColheita: 900, epoca: [1, 2], categoria: 'frutifera' },
+    manjericao: { nome: 'Manjericão', diasColheita: 50, epoca: [9], categoria: 'tempero' },
+    milho: { nome: 'Milho', diasColheita: 100, epoca: [9, 10, 11], categoria: 'grao' },
+    morango: { nome: 'Morango', diasColheita: 70, epoca: [3, 4, 5], categoria: 'frutifera' },
+    pepino: { nome: 'Pepino', diasColheita: 50, epoca: [9, 10, 11, 12, 1, 2], categoria: 'frutifera' },
+    rucula: { nome: 'Rúcula', diasColheita: 40, epoca: [3, 4, 5, 6, 7, 8], categoria: 'hortalica' },
+    salsa: { nome: 'Salsa', diasColheita: 60, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'tempero' },
+    uva: { nome: 'Uva', diasColheita: 900, epoca: [6, 7, 8], categoria: 'frutifera' }
 };
 
 const categorias = {
@@ -432,7 +452,6 @@ function removerMudaFirestore(id) {
 }
 
 function editarMuda(id) {
-    // Redireciona para o formulário com o ID da muda
     window.location.href = `adicionarmuda.html?edit=${id}`;
 }
 
@@ -584,6 +603,5 @@ window.onload = function() {
     buscarClima();
     carregarPlantioRecomendado();
     mostrarDica();
-    // Gráficos ainda usam localStorage (depois migramos)
     atualizarGrafico();
 };
