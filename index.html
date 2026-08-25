@@ -5,129 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgroAssist</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- Cabeçalho com login -->
+        <!-- ====== CABEÇALHO ====== -->
         <div class="header">
             <h1>🌿 AgroAssist</h1>
             <div id="user-area">
-                <button onclick="loginComGoogle()" id="btnLogin" class="btn btn-secondary">🔑 Login com Google</button>
-                <button onclick="logout()" id="btnLogout" style="display:none;" class="btn btn-danger">🚪 Sair</button>
-                <span id="userEmail" style="margin-left: 10px; font-weight: 600;"></span>
+                <button onclick="loginComGoogle()" id="btnLogin" class="btn btn-secondary">🔑 Login</button>
+                <div id="user-menu" style="display: none; position: relative;">
+                    <button onclick="toggleMenu()" id="btnUser" class="btn btn-secondary">👤 <span id="userEmailShort">...</span></button>
+                    <div id="dropdown-menu" style="display: none; position: absolute; right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 8px 0; min-width: 120px; z-index: 100;">
+                        <button onclick="logout()" style="background: none; border: none; padding: 8px 16px; width: 100%; text-align: left; color: #c62828; font-weight: 600;">🚪 Sair</button>
+                    </div>
+                </div>
             </div>
         </div>
         <p class="subtitle">🌱 Do campo para o seu bolso. Acompanhe suas mudas, plantações e o clima com inteligência.</p>
 
-        <!-- Dica do Dia -->
-        <div class="card" id="card-dica" style="border-left: 6px solid #f9a825;">
-            <h2>💡 Dica do Dia</h2>
-            <p id="dica-do-dia" style="font-size: 1.1rem; font-weight: 500; color: #1e4a2b;">Carregando dica...</p>
-        </div>
-
-        <!-- Fase da Lua -->
-        <div class="card" id="card-lua">
-            <h2>🌙 Fase da Lua Hoje</h2>
-            <div id="fase-lua">
-                <p style="font-size: 1.6rem; font-weight: 700;" id="fase-nome">Carregando...</p>
-                <p id="fase-recomendacao" style="color: #4a7c59; font-style: italic;">O que fazer hoje?</p>
+        <!-- ====== DESTAQUE: CLIMA + LUA + DICA ====== -->
+        <div class="card" id="card-destaque">
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 2rem;">☀️</span>
+                    <div>
+                        <span id="temperatura">--</span>°C
+                        <span id="cidade-clima" style="font-size: 0.8rem; color: #555;">Sua cidade</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 2rem;">🌙</span>
+                    <div>
+                        <span id="fase-nome">Carregando...</span>
+                        <span id="fase-recomendacao" style="font-size: 0.8rem; color: #555; display: block; font-style: italic;">O que fazer hoje?</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 2rem;">💡</span>
+                    <div>
+                        <span id="dica-do-dia" style="font-size: 0.9rem;">Carregando dica...</span>
+                    </div>
+                </div>
             </div>
+            <div id="alertas-clima" style="margin-top: 8px;"></div>
         </div>
 
-        <!-- Previsão do Tempo -->
-        <div class="card" id="card-clima">
-            <h2>🌧️ Previsão do Tempo</h2>
-            <div id="previsao-clima">
-                <p>📍 <span id="cidade-clima">Sua cidade</span></p>
-                <p>🌡️ <span id="temperatura">--</span>°C</p>
-                <p>☁️ <span id="descricao-clima">--</span></p>
-                <div id="alertas-clima" style="margin-top: 8px;"></div>
-            </div>
-        </div>
-
-        <!-- Calendário de Plantio -->
-        <div class="card" id="card-plantio">
-            <h2>📅 O que plantar agora?</h2>
-            <div id="lista-plantio">
-                <p>Carregando recomendações...</p>
-            </div>
-        </div>
-
-        <!-- Pesquisa -->
+        <!-- ====== PESQUISA + RECOMENDAÇÕES ====== -->
         <div class="card">
-            <h2>🔍 Pesquisar Planta</h2>
-            <div class="pesquisa">
-                <input id="campoPesquisa" placeholder="Digite o nome da planta ou observação..." onkeydown="if(event.key==='Enter') pesquisarAvancado()">
-                <button onclick="pesquisarAvancado()">🔍 Pesquisar</button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input id="campoPesquisa" placeholder="🔍 Pesquisar planta..." style="flex: 1; padding: 10px 16px; border: 2px solid #d4e8d4; border-radius: 30px; font-size: 1rem; outline: none;" onkeydown="if(event.key==='Enter') pesquisarAvancado()">
+                <button onclick="pesquisarAvancado()" class="btn" style="padding: 10px 24px;">🔍</button>
+            </div>
+            <div id="recomendadas" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+                <span style="font-weight: 600; color: #1e4a2b;">🌱 Recomendadas:</span>
+                <a href="tomate.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🍅 Tomate</a>
+                <a href="alface.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🥬 Alface</a>
+                <a href="pimenta.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🌶 Pimenta</a>
+                <a href="couve.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🍀 Couve</a>
+                <a href="cebolinha.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🧅 Cebolinha</a>
             </div>
         </div>
 
-        <!-- Recomendadas -->
-        <div class="card">
-            <h2>🍃 Recomendadas para esta época</h2>
-            <ul>
-                <li><a href="tomate.html">🍅 Tomate</a></li>
-                <li><a href="alface.html">🥬 Alface</a></li>
-                <li><a href="pimenta.html">🌶 Pimenta</a></li>
-                <li><a href="couve.html">🍀 Couve</a></li>
-                <li><a href="cebolinha.html">🧅 Cebolinha</a></li>
-            </ul>
-        </div>
-
-        <!-- Gráficos -->
-        <div class="card">
-            <h2>📊 Estatísticas de Produção</h2>
-            <canvas id="graficoMudas" width="400" height="200"></canvas>
-            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn btn-secondary" onclick="exportarCSV('mudas')">📥 Exportar Mudas (CSV)</button>
-                <button class="btn btn-secondary" onclick="exportarCSV('plantacoes')">📥 Exportar Plantações (CSV)</button>
+        <!-- ====== ESTATÍSTICAS RÁPIDAS ====== -->
+        <div class="card" style="background: #f6fbf6;">
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-around; text-align: center;">
+                <div>
+                    <p style="font-size: 0.8rem; color: #555;">🌱 Mudas</p>
+                    <p style="font-size: 1.4rem; font-weight: 700; color: #1e4a2b;" id="contadorMudas">0</p>
+                </div>
+                <div>
+                    <p style="font-size: 0.8rem; color: #555;">🌿 Plantações</p>
+                    <p style="font-size: 1.4rem; font-weight: 700; color: #1e4a2b;" id="contadorPlantacoes">0</p>
+                </div>
+                <div>
+                    <p style="font-size: 0.8rem; color: #555;">💰 Lucro estimado</p>
+                    <p style="font-size: 1.4rem; font-weight: 700; color: #2e7d32;" id="lucroTotal">R$ 0,00</p>
+                </div>
             </div>
         </div>
 
-        <!-- Minhas Mudas -->
-        <div class="card">
-            <h2>
-                🌱 Minhas Mudas
-                <span class="badge" id="contadorMudas">0</span>
-            </h2>
-            <div id="lista-mudas"></div>
-            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="adicionarmuda.html" class="btn">➕ Adicionar Muda</a>
-                <button class="btn btn-danger" onclick="limparMudas()">🗑️ Limpar tudo</button>
+        <!-- ====== CARD FINANCEIRO ====== -->
+        <div class="card" id="card-financeiro">
+            <h2>💰 Planejamento Financeiro</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
+                <div>
+                    <p><strong>💵 Custo total:</strong></p>
+                    <p style="font-size: 1.2rem; color: #c62828;" id="custoTotal">R$ 0,00</p>
+                </div>
+                <div>
+                    <p><strong>📈 Receita potencial:</strong></p>
+                    <p style="font-size: 1.2rem; color: #2e7d32;" id="receitaTotal">R$ 0,00</p>
+                </div>
+                <div>
+                    <p><strong>📊 Lucro estimado:</strong></p>
+                    <p style="font-size: 1.2rem; color: #1e4a2b;" id="lucroTotalCard">R$ 0,00</p>
+                </div>
+                <div>
+                    <p><strong>📈 ROI médio:</strong></p>
+                    <p style="font-size: 1.2rem; color: #f9a825;" id="roiMedio">0%</p>
+                </div>
+            </div>
+            <canvas id="graficoFinanceiro" width="400" height="200" style="margin-top: 12px;"></canvas>
+        </div>
+
+        <!-- ====== MINHAS MUDAS E PLANTAÇÕES ====== -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="card">
+                <h2>🌱 Minhas Mudas <span class="badge" id="contadorMudasCard">0</span></h2>
+                <div id="lista-mudas"></div>
+                <a href="adicionarmuda.html" class="btn" style="display: block; text-align: center; margin-top: 12px;">➕ Adicionar Muda</a>
+                <button class="btn btn-danger" onclick="limparMudas()" style="display: block; text-align: center; margin-top: 8px; width: 100%;">🗑️ Limpar tudo</button>
+            </div>
+            <div class="card">
+                <h2>🌿 Minhas Plantações <span class="badge" id="contadorPlantacoesCard">0</span></h2>
+                <div id="lista-plantacoes"></div>
+                <a href="adicionarplant.html" class="btn" style="display: block; text-align: center; margin-top: 12px;">➕ Adicionar Plantação</a>
+                <button class="btn btn-danger" onclick="limparPlantacoes()" style="display: block; text-align: center; margin-top: 8px; width: 100%;">🗑️ Limpar tudo</button>
             </div>
         </div>
 
-        <!-- Minhas Plantações -->
-        <div class="card">
-            <h2>
-                🌿 Minhas Plantações
-                <span class="badge" id="contadorPlantacoes">0</span>
-            </h2>
-            <div id="lista-plantacoes"></div>
-            <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="adicionarplant.html" class="btn">➕ Adicionar Plantação</a>
-                <button class="btn btn-danger" onclick="limparPlantacoes()">🗑️ Limpar tudo</button>
-            </div>
-        </div>
-
-        <!-- Sobre -->
-        <div style="text-align: center; margin-top: 16px;">
+        <!-- ====== RODAPÉ ====== -->
+        <div style="text-align: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid #d4e8d4;">
             <a href="sobre.html" style="color: #2e7d32; text-decoration: none; font-weight: 500;">📖 Sobre o AgroAssist</a>
+            <span style="color: #aaa; margin: 0 8px;">|</span>
+            <span style="color: #aaa;">Versão 2.0</span>
+            <span style="color: #aaa; margin: 0 8px;">|</span>
+            <span style="color: #aaa;">Feito com 🌱 por Kauã</span>
         </div>
     </div>
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- ===== FIREBASE (CDN) ===== -->
+    <!-- ===== FIREBASE ===== -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-
     <script>
-        // COLE SEU firebaseConfig AQUI
         const firebaseConfig = {
             apiKey: "AIzaSyB38cdIUWfhYBsZ5ws98OJoXMb1giTimsQ",
             authDomain: "agroassist-70d02.firebaseapp.com",
@@ -137,12 +152,27 @@
             appId: "1:216659418233:web:0564da8d06842eef7408a8",
             measurementId: "G-7E0538E971"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
     </script>
 
     <script src="script.js"></script>
+    <script>
+        // Adiciona função toggleMenu para o dropdown
+        function toggleMenu() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Fecha o menu se clicar fora
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('dropdown-menu');
+            const btn = document.getElementById('btnUser');
+            if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
