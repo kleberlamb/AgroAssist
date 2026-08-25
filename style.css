@@ -94,30 +94,14 @@ body {
 /* ============================================
    CARDS ESPECIAIS (LUA, CLIMA, PLANTIO, DICA)
    ============================================ */
-#card-lua {
+#card-destaque {
     background: linear-gradient(135deg, #f3f9f3, #e0efe0);
     border-left: 6px solid #5d6d5d;
 }
 
-#card-clima {
-    background: linear-gradient(135deg, #f0f7fa, #dce8f0);
-    border-left: 6px solid #0288d1;
-}
-
-#card-plantio {
-    background: linear-gradient(135deg, #fff8e7, #f5edc7);
+#card-financeiro {
+    background: linear-gradient(135deg, #f5f0e8, #e8f0e8);
     border-left: 6px solid #f9a825;
-}
-
-#card-dica {
-    background: linear-gradient(135deg, #fff8e7, #f5edc7);
-    border-left: 6px solid #f9a825;
-}
-
-#card-dica p {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #1e4a2b;
 }
 
 #fase-nome {
@@ -428,11 +412,17 @@ ul li a:hover {
 }
 
 /* ============================================
-   GRÁFICO
+   GRÁFICOS
    ============================================ */
 #graficoMudas {
     max-height: 250px;
     max-width: 100%;
+}
+
+#graficoFinanceiro {
+    max-height: 200px;
+    max-width: 100%;
+    margin-top: 12px;
 }
 
 /* ============================================
@@ -475,23 +465,4 @@ ul li a:hover {
     #card-dica p {
         font-size: 1rem;
     }
-}
-/* ===== CARD FINANCEIRO ===== */
-#card-financeiro {
-    background: linear-gradient(135deg, #f5f0e8, #e8f0e8);
-    border-left: 6px solid #f9a825;
-}
-
-#resumo-financeiro {
-    margin: 8px 0;
-}
-
-#resumo-financeiro p {
-    margin: 4px 0;
-}
-
-#graficoFinanceiro {
-    max-height: 200px;
-    max-width: 100%;
-    margin-top: 12px;
 }
