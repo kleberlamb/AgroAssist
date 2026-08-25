@@ -598,4 +598,143 @@ function salvarPlantacaoFirestore() {
     const categoria = document.getElementById('categoriaPlanta').value;
 
     if (!nome || !quantidade || !data) {
-        mostrarToast('⚠️ Preencha
+        mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
+        return;
+    }
+
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        mostrarToast('⚠️ Faça login primeiro!', '#c62828');
+        return;
+    }
+
+    const plantacao = { 
+        nome, 
+        quantidade, 
+        data, 
+        obs, 
+        categoria, 
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
+    };
+
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').add(plantacao)
+        .then(() => {
+            mostrarToast('✅ Plantação salva na nuvem!', '#2e7d32');
+            window.location.href = 'index.html';
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao salvar: ' + erro.message, '#c62828');
+        });
+}
+
+function carregarPlantacoesFirestore() {
+    const container = document.getElementById('lista-plantacoes');
+    if (!container) return;
+
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        container.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
+        return;
+    }
+
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').orderBy('criadoEm', 'desc').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="empty-message">🌿 Você ainda não tem plantações.</p>';
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                const cat = categorias[p.categoria] || '🌿';
+                html += `
+                    <div class="card-item">
+                        <div class="info">
+                            <h3>${cat} ${p.nome}</h3>
+                            <p>📦 ${p.quantidade} unidade(s)</p>
+                            <p>📅 Transplante: ${p.data}</p>
+                            ${p.obs ? `<p class="obs">📝 ${p.obs}</p>` : ''}
+                        </div>
+                        <div class="actions">
+                            <button onclick="editarPlantacao('${doc.id}')">✏️ Editar</button>
+                            <button onclick="removerPlantacaoFirestore('${doc.id}')">❌ Remover</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            atualizarContadoresFirestore();
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao carregar: ' + erro.message, '#c62828');
+        });
+}
+
+function removerPlantacaoFirestore(id) {
+    if (!confirm('Remover esta plantação?')) return;
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').doc(id).delete()
+        .then(() => {
+            mostrarToast('🗑️ Plantação removida', '#5d6d5d');
+            carregarPlantacoesFirestore();
+        })
+        .catch(erro => {
+            mostrarToast('❌ Erro ao remover: ' + erro.message, '#c62828');
+        });
+}
+
+function editarPlantacao(id) {
+    window.location.href = `adicionarplant.html?edit=${id}`;
+}
+
+// ============================================
+// CONTADORES FIRESTORE
+// ============================================
+function atualizarContadoresFirestore() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    db.collection('usuarios').doc(user.uid).collection('mudas').get()
+        .then(snapshot => {
+            const cM = document.getElementById('contadorMudas');
+            if (cM) cM.textContent = snapshot.size;
+        });
+
+    db.collection('usuarios').doc(user.uid).collection('plantacoes').get()
+        .then(snapshot => {
+            const cP = document.getElementById('contadorPlantacoes');
+            if (cP) cP.textContent = snapshot.size;
+        });
+}
+
+// ============================================
+// LIMPAR TUDO (LOCALSTORAGE)
+// ============================================
+function limparMudas() {
+    if (!confirm('⚠️ Apagar TODAS as mudas?')) return;
+    localStorage.removeItem('mudas');
+    carregarMudasFirestore();
+    mostrarToast('🧹 Mudas removidas', '#c62828');
+}
+
+function limparPlantacoes() {
+    if (!confirm('⚠️ Apagar TODAS as plantações?')) return;
+    localStorage.removeItem('plantacoes');
+    carregarPlantacoesFirestore();
+    mostrarToast('🧹 Plantações removidas', '#c62828');
+}
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+window.onload = function() {
+    calcularFaseLua();
+    buscarClima();
+    carregarPlantioRecomendado();
+    mostrarDica();
+    atualizarGrafico();
+    carregarFinanceiro();
+    atualizarGraficoFinanceiro();
+};
