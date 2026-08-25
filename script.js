@@ -76,7 +76,8 @@ const dicas = [
 
 function mostrarDica() {
     const dica = dicas[Math.floor(Math.random() * dicas.length)];
-    document.getElementById('dica-do-dia').textContent = dica;
+    const el = document.getElementById('dica-do-dia');
+    if (el) el.textContent = dica;
 }
 
 // ============================================
@@ -118,8 +119,10 @@ function calcularFaseLua() {
         nome = '🌑 Lua Nova';
         recomendacao = '🌱 Plante mudas de folhas (alface, couve).';
     }
-    document.getElementById('fase-nome').textContent = nome;
-    document.getElementById('fase-recomendacao').textContent = recomendacao;
+    const nomeEl = document.getElementById('fase-nome');
+    const recEl = document.getElementById('fase-recomendacao');
+    if (nomeEl) nomeEl.textContent = nome;
+    if (recEl) recEl.textContent = recomendacao;
 }
 
 // ============================================
@@ -130,11 +133,15 @@ function buscarClima() {
     fetch(url)
         .then(res => res.json())
         .then(data => {
-            document.getElementById('cidade-clima').textContent = data.name;
-            document.getElementById('temperatura').textContent = Math.round(data.main.temp);
-            document.getElementById('descricao-clima').textContent = data.weather[0].description;
+            const tempEl = document.getElementById('temperatura');
+            const cidadeEl = document.getElementById('cidade-clima');
+            const descEl = document.getElementById('descricao-clima');
+            if (tempEl) tempEl.textContent = Math.round(data.main.temp);
+            if (cidadeEl) cidadeEl.textContent = data.name;
+            if (descEl) descEl.textContent = data.weather[0].description;
             const chuva = data.rain ? data.rain['1h'] || data.rain['3h'] : 0;
             const alertaDiv = document.getElementById('alertas-clima');
+            if (!alertaDiv) return;
             alertaDiv.innerHTML = '';
             if (chuva > 0) {
                 const alerta = document.createElement('p');
@@ -150,9 +157,12 @@ function buscarClima() {
             }
         })
         .catch(() => {
-            document.getElementById('cidade-clima').textContent = '--';
-            document.getElementById('temperatura').textContent = '--';
-            document.getElementById('descricao-clima').textContent = 'Não foi possível carregar o clima.';
+            const tempEl = document.getElementById('temperatura');
+            const cidadeEl = document.getElementById('cidade-clima');
+            const descEl = document.getElementById('descricao-clima');
+            if (tempEl) tempEl.textContent = '--';
+            if (cidadeEl) cidadeEl.textContent = '--';
+            if (descEl) descEl.textContent = 'Não foi possível carregar o clima.';
         });
 }
 
@@ -161,6 +171,7 @@ function buscarClima() {
 // ============================================
 function carregarPlantioRecomendado() {
     const container = document.getElementById('lista-plantio');
+    if (!container) return;
     const mesAtual = new Date().getMonth() + 1;
     const recomendadas = Object.values(plantasDB).filter(p => p.epoca.includes(mesAtual));
     if (recomendadas.length === 0) {
@@ -183,7 +194,9 @@ let graficoInstance = null;
 
 function atualizarGrafico() {
     const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    const ctx = document.getElementById('graficoMudas').getContext('2d');
+    const ctx = document.getElementById('graficoMudas');
+    if (!ctx) return;
+    const canvas = ctx.getContext('2d');
     if (graficoInstance) {
         graficoInstance.destroy();
     }
@@ -194,14 +207,14 @@ function atualizarGrafico() {
     const labels = Object.keys(contagem);
     const data = Object.values(contagem);
     if (labels.length === 0) {
-        graficoInstance = new Chart(ctx, {
+        graficoInstance = new Chart(canvas, {
             type: 'bar',
             data: { labels: ['Nenhuma muda'], datasets: [{ label: 'Quantidade', data: [0], backgroundColor: '#c8e0c8' }] },
             options: { responsive: true, plugins: { legend: { display: false } } }
         });
         return;
     }
-    graficoInstance = new Chart(ctx, {
+    graficoInstance = new Chart(canvas, {
         type: 'bar',
         data: {
             labels: labels,
@@ -246,7 +259,9 @@ function exportarCSV(tipo) {
 // 🔍 PESQUISA AVANÇADA
 // ============================================
 function pesquisarAvancado() {
-    const termo = document.getElementById('campoPesquisa').value.trim().toLowerCase();
+    const input = document.getElementById('campoPesquisa');
+    if (!input) return;
+    const termo = input.value.trim().toLowerCase();
     if (!termo) {
         mostrarToast('🔍 Digite um termo para pesquisar.', '#5d6d5d');
         return;
@@ -328,9 +343,13 @@ function calcularResumoFinanceiro() {
 // ============================================
 function carregarFinanceiro() {
     const resumo = calcularResumoFinanceiro();
-    document.getElementById('custoTotal').textContent = `R$ ${resumo.custoTotal.toFixed(2)}`;
-    document.getElementById('receitaTotal').textContent = `R$ ${resumo.receitaTotal.toFixed(2)}`;
-    document.getElementById('lucroTotal').textContent = `R$ ${resumo.lucroTotal.toFixed(2)}`;
+    const custoEl = document.getElementById('custoTotal');
+    const receitaEl = document.getElementById('receitaTotal');
+    const lucroEl = document.getElementById('lucroTotal');
+    const roiEl = document.getElementById('roiMedio');
+    if (custoEl) custoEl.textContent = `R$ ${resumo.custoTotal.toFixed(2)}`;
+    if (receitaEl) receitaEl.textContent = `R$ ${resumo.receitaTotal.toFixed(2)}`;
+    if (lucroEl) lucroEl.textContent = `R$ ${resumo.lucroTotal.toFixed(2)}`;
 
     const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
     let roiTotal = 0;
@@ -343,7 +362,7 @@ function carregarFinanceiro() {
         }
     });
     const roiMedio = count > 0 ? roiTotal / count : 0;
-    document.getElementById('roiMedio').textContent = roiMedio.toFixed(1) + '%';
+    if (roiEl) roiEl.textContent = roiMedio.toFixed(1) + '%';
 }
 
 // ============================================
@@ -353,7 +372,9 @@ let graficoFinanceiroInstance = null;
 
 function atualizarGraficoFinanceiro() {
     const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    const ctx = document.getElementById('graficoFinanceiro').getContext('2d');
+    const ctx = document.getElementById('graficoFinanceiro');
+    if (!ctx) return;
+    const canvas = ctx.getContext('2d');
     if (graficoFinanceiroInstance) {
         graficoFinanceiroInstance.destroy();
     }
@@ -379,7 +400,7 @@ function atualizarGraficoFinanceiro() {
     const lucroData = labels.map(l => resumo[l].lucro);
 
     if (labels.length === 0) {
-        graficoFinanceiroInstance = new Chart(ctx, {
+        graficoFinanceiroInstance = new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: ['Nenhuma muda'],
@@ -394,7 +415,7 @@ function atualizarGraficoFinanceiro() {
         return;
     }
 
-    graficoFinanceiroInstance = new Chart(ctx, {
+    graficoFinanceiroInstance = new Chart(canvas, {
         type: 'bar',
         data: {
             labels: labels,
@@ -442,17 +463,19 @@ firebase.auth().onAuthStateChanged(user => {
     const userEmail = document.getElementById('userEmail');
 
     if (user) {
-        btnLogin.style.display = 'none';
-        btnLogout.style.display = 'inline-block';
-        userEmail.textContent = '👤 ' + user.email;
+        if (btnLogin) btnLogin.style.display = 'none';
+        if (btnLogout) btnLogout.style.display = 'inline-block';
+        if (userEmail) userEmail.textContent = '👤 ' + user.email;
         carregarMudasFirestore();
         carregarPlantacoesFirestore();
     } else {
-        btnLogin.style.display = 'inline-block';
-        btnLogout.style.display = 'none';
-        userEmail.textContent = '';
-        document.getElementById('lista-mudas').innerHTML = '<p class="empty-message">🔒 Faça login para ver suas mudas.</p>';
-        document.getElementById('lista-plantacoes').innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
+        if (btnLogin) btnLogin.style.display = 'inline-block';
+        if (btnLogout) btnLogout.style.display = 'none';
+        if (userEmail) userEmail.textContent = '';
+        const mudaContainer = document.getElementById('lista-mudas');
+        const plantContainer = document.getElementById('lista-plantacoes');
+        if (mudaContainer) mudaContainer.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas mudas.</p>';
+        if (plantContainer) plantContainer.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
     }
 });
 
@@ -461,13 +484,22 @@ firebase.auth().onAuthStateChanged(user => {
 // ============================================
 
 function salvarMudaFirestore() {
-    const nome = document.getElementById('nomeMuda').value.trim();
-    const quantidade = document.getElementById('quantidadeMuda').value.trim();
-    const data = document.getElementById('dataMuda').value;
-    const obs = document.getElementById('obsMuda').value.trim();
-    const categoria = document.getElementById('categoriaMuda').value;
-
+    const nome = document.getElementById('nomeMuda');
+    const quantidade = document.getElementById('quantidadeMuda');
+    const data = document.getElementById('dataMuda');
+    const obs = document.getElementById('obsMuda');
+    const categoria = document.getElementById('categoriaMuda');
     if (!nome || !quantidade || !data) {
+        mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
+        return;
+    }
+    const nomeVal = nome.value.trim();
+    const qtdVal = quantidade.value.trim();
+    const dataVal = data.value;
+    const obsVal = obs ? obs.value.trim() : '';
+    const catVal = categoria ? categoria.value : 'hortalica';
+
+    if (!nomeVal || !qtdVal || !dataVal) {
         mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
         return;
     }
@@ -479,11 +511,11 @@ function salvarMudaFirestore() {
     }
 
     const muda = { 
-        nome, 
-        quantidade, 
-        data, 
-        obs, 
-        categoria, 
+        nome: nomeVal, 
+        quantidade: qtdVal, 
+        data: dataVal, 
+        obs: obsVal, 
+        categoria: catVal, 
         criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
     };
 
@@ -591,13 +623,22 @@ function editarMuda(id) {
 // ============================================
 
 function salvarPlantacaoFirestore() {
-    const nome = document.getElementById('nomePlanta').value.trim();
-    const quantidade = document.getElementById('quantidadePlanta').value.trim();
-    const data = document.getElementById('dataTransplante').value;
-    const obs = document.getElementById('obsPlantacao').value.trim();
-    const categoria = document.getElementById('categoriaPlanta').value;
-
+    const nome = document.getElementById('nomePlanta');
+    const quantidade = document.getElementById('quantidadePlanta');
+    const data = document.getElementById('dataTransplante');
+    const obs = document.getElementById('obsPlantacao');
+    const categoria = document.getElementById('categoriaPlanta');
     if (!nome || !quantidade || !data) {
+        mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
+        return;
+    }
+    const nomeVal = nome.value.trim();
+    const qtdVal = quantidade.value.trim();
+    const dataVal = data.value;
+    const obsVal = obs ? obs.value.trim() : '';
+    const catVal = categoria ? categoria.value : 'hortalica';
+
+    if (!nomeVal || !qtdVal || !dataVal) {
         mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
         return;
     }
@@ -609,11 +650,11 @@ function salvarPlantacaoFirestore() {
     }
 
     const plantacao = { 
-        nome, 
-        quantidade, 
-        data, 
-        obs, 
-        categoria, 
+        nome: nomeVal, 
+        quantidade: qtdVal, 
+        data: dataVal, 
+        obs: obsVal, 
+        categoria: catVal, 
         criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
     };
 
