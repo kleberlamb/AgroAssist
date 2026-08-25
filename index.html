@@ -2,177 +2,236 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AgroAssist</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <!-- ====== CABEÇALHO ====== -->
-        <div class="header">
-            <h1>🌿 AgroAssist</h1>
-            <div id="user-area">
-                <button onclick="loginComGoogle()" id="btnLogin" class="btn btn-secondary">🔑 Login</button>
-                <div id="user-menu" style="display: none; position: relative;">
-                    <button onclick="toggleMenu()" id="btnUser" class="btn btn-secondary">👤 <span id="userEmailShort">...</span></button>
-                    <div id="dropdown-menu" style="display: none; position: absolute; right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 8px 0; min-width: 120px; z-index: 100;">
-                        <button onclick="logout()" style="background: none; border: none; padding: 8px 16px; width: 100%; text-align: left; color: #c62828; font-weight: 600;">🚪 Sair</button>
+
+<div class="app-container">
+
+    <!-- CABEÇALHO -->
+    <header class="app-header">
+        <div class="logo">
+            <i class="fas fa-leaf"></i>
+            <span>AgroAssist</span>
+        </div>
+        <div class="header-actions">
+            <button id="btnLogin" class="btn-login" onclick="loginComGoogle()">Entrar</button>
+            <div id="userArea" style="display:none; align-items:center; gap:10px;">
+                <span id="userName" class="user-name"></span>
+                <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BARRA DE PESQUISA -->
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="campoPesquisa" placeholder="Pesquisar planta..." onkeydown="if(event.key==='Enter') pesquisarAvancado()">
+        <button onclick="pesquisarAvancado()"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- ABA INÍCIO -->
+        <section id="tab-inicio" class="tab-content active">
+            <!-- DESTAQUE -->
+            <div class="card destaque">
+                <div class="destaque-grid">
+                    <div class="destaque-item">
+                        <i class="fas fa-cloud-sun"></i>
+                        <span id="temperatura">--</span><span>°C</span>
+                        <span id="cidade-clima" class="cidade">Carregando...</span>
+                    </div>
+                    <div class="destaque-item">
+                        <i class="fas fa-moon"></i>
+                        <span id="fase-nome">--</span>
+                        <span id="fase-recomendacao" class="dica">O que fazer hoje?</span>
+                    </div>
+                    <div class="destaque-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <span id="dica-do-dia">Dica do dia</span>
                     </div>
                 </div>
+                <div id="alertas-clima" class="alertas"></div>
             </div>
-        </div>
-        <p class="subtitle">🌱 Do campo para o seu bolso. Acompanhe suas mudas, plantações e o clima com inteligência.</p>
 
-        <!-- ====== DESTAQUE: CLIMA + LUA + DICA ====== -->
-        <div class="card" id="card-destaque">
-            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 2rem;">☀️</span>
-                    <div>
-                        <span id="temperatura">--</span>°C
-                        <span id="cidade-clima" style="font-size: 0.8rem; color: #555;">Sua cidade</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 2rem;">🌙</span>
-                    <div>
-                        <span id="fase-nome">Carregando...</span>
-                        <span id="fase-recomendacao" style="font-size: 0.8rem; color: #555; display: block; font-style: italic;">O que fazer hoje?</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 2rem;">💡</span>
-                    <div>
-                        <span id="dica-do-dia" style="font-size: 0.9rem;">Carregando dica...</span>
-                    </div>
+            <!-- RECOMENDADAS -->
+            <div class="card">
+                <h2>🌱 Recomendadas</h2>
+                <div class="chip-container">
+                    <a href="tomate.html" class="chip">🍅 Tomate</a>
+                    <a href="alface.html" class="chip">🥬 Alface</a>
+                    <a href="pimenta.html" class="chip">🌶 Pimenta</a>
+                    <a href="couve.html" class="chip">🥬 Couve</a>
+                    <a href="cebolinha.html" class="chip">🧅 Cebolinha</a>
                 </div>
             </div>
-            <div id="alertas-clima" style="margin-top: 8px;"></div>
-        </div>
 
-        <!-- ====== PESQUISA + RECOMENDAÇÕES ====== -->
-        <div class="card">
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input id="campoPesquisa" placeholder="🔍 Pesquisar planta..." style="flex: 1; padding: 10px 16px; border: 2px solid #d4e8d4; border-radius: 30px; font-size: 1rem; outline: none;" onkeydown="if(event.key==='Enter') pesquisarAvancado()">
-                <button onclick="pesquisarAvancado()" class="btn" style="padding: 10px 24px;">🔍</button>
+            <!-- ESTATÍSTICAS -->
+            <div class="card stats">
+                <div class="stat-item">
+                    <span class="stat-icon">🌱</span>
+                    <span class="stat-value" id="contadorMudas">0</span>
+                    <span class="stat-label">Mudas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🌿</span>
+                    <span class="stat-value" id="contadorPlantacoes">0</span>
+                    <span class="stat-label">Plantações</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">💰</span>
+                    <span class="stat-value" id="lucroTotal">R$ 0,00</span>
+                    <span class="stat-label">Lucro</span>
+                </div>
             </div>
-            <div id="recomendadas" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
-                <span style="font-weight: 600; color: #1e4a2b;">🌱 Recomendadas:</span>
-                <a href="tomate.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🍅 Tomate</a>
-                <a href="alface.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🥬 Alface</a>
-                <a href="pimenta.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🌶 Pimenta</a>
-                <a href="couve.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🍀 Couve</a>
-                <a href="cebolinha.html" style="background: #eaf5ea; padding: 4px 14px; border-radius: 30px; text-decoration: none; color: #1e4a2b; font-weight: 500;">🧅 Cebolinha</a>
-            </div>
-        </div>
+        </section>
 
-        <!-- ====== ESTATÍSTICAS RÁPIDAS ====== -->
-        <div class="card" style="background: #f6fbf6;">
-            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-around; text-align: center;">
-                <div>
-                    <p style="font-size: 0.8rem; color: #555;">🌱 Mudas</p>
-                    <p style="font-size: 1.4rem; font-weight: 700; color: #1e4a2b;" id="contadorMudas">0</p>
-                </div>
-                <div>
-                    <p style="font-size: 0.8rem; color: #555;">🌿 Plantações</p>
-                    <p style="font-size: 1.4rem; font-weight: 700; color: #1e4a2b;" id="contadorPlantacoes">0</p>
-                </div>
-                <div>
-                    <p style="font-size: 0.8rem; color: #555;">💰 Lucro estimado</p>
-                    <p style="font-size: 1.4rem; font-weight: 700; color: #2e7d32;" id="lucroTotal">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ====== CARD FINANCEIRO ====== -->
-        <div class="card" id="card-financeiro">
-            <h2>💰 Planejamento Financeiro</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
-                <div>
-                    <p><strong>💵 Custo total:</strong></p>
-                    <p style="font-size: 1.2rem; color: #c62828;" id="custoTotal">R$ 0,00</p>
-                </div>
-                <div>
-                    <p><strong>📈 Receita potencial:</strong></p>
-                    <p style="font-size: 1.2rem; color: #2e7d32;" id="receitaTotal">R$ 0,00</p>
-                </div>
-                <div>
-                    <p><strong>📊 Lucro estimado:</strong></p>
-                    <p style="font-size: 1.2rem; color: #1e4a2b;" id="lucroTotalCard">R$ 0,00</p>
-                </div>
-                <div>
-                    <p><strong>📈 ROI médio:</strong></p>
-                    <p style="font-size: 1.2rem; color: #f9a825;" id="roiMedio">0%</p>
-                </div>
-            </div>
-            <canvas id="graficoFinanceiro" width="400" height="200" style="margin-top: 12px;"></canvas>
-        </div>
-
-        <!-- ====== MINHAS MUDAS E PLANTAÇÕES ====== -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <!-- ABA MUDAS -->
+        <section id="tab-mudas" class="tab-content">
             <div class="card">
                 <h2>🌱 Minhas Mudas <span class="badge" id="contadorMudasCard">0</span></h2>
                 <div id="lista-mudas"></div>
-                <a href="adicionarmuda.html" class="btn" style="display: block; text-align: center; margin-top: 12px;">➕ Adicionar Muda</a>
-                <button class="btn btn-danger" onclick="limparMudas()" style="display: block; text-align: center; margin-top: 8px; width: 100%;">🗑️ Limpar tudo</button>
+                <a href="adicionarmuda.html" class="btn btn-primary btn-block">➕ Adicionar Muda</a>
+                <button class="btn btn-danger btn-block" onclick="limparMudas()">🗑️ Limpar tudo</button>
             </div>
+        </section>
+
+        <!-- ABA PLANTAÇÕES -->
+        <section id="tab-plantacoes" class="tab-content">
             <div class="card">
                 <h2>🌿 Minhas Plantações <span class="badge" id="contadorPlantacoesCard">0</span></h2>
                 <div id="lista-plantacoes"></div>
-                <a href="adicionarplant.html" class="btn" style="display: block; text-align: center; margin-top: 12px;">➕ Adicionar Plantação</a>
-                <button class="btn btn-danger" onclick="limparPlantacoes()" style="display: block; text-align: center; margin-top: 8px; width: 100%;">🗑️ Limpar tudo</button>
+                <a href="adicionarplant.html" class="btn btn-primary btn-block">➕ Adicionar Plantação</a>
+                <button class="btn btn-danger btn-block" onclick="limparPlantacoes()">🗑️ Limpar tudo</button>
             </div>
-        </div>
+        </section>
 
-        <!-- ====== RODAPÉ ====== -->
-        <div style="text-align: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid #d4e8d4;">
-            <a href="sobre.html" style="color: #2e7d32; text-decoration: none; font-weight: 500;">📖 Sobre o AgroAssist</a>
-            <span style="color: #aaa; margin: 0 8px;">|</span>
-            <span style="color: #aaa;">Versão 2.0</span>
-            <span style="color: #aaa; margin: 0 8px;">|</span>
-            <span style="color: #aaa;">Feito com 🌱 por Kauã</span>
-        </div>
-    </div>
+        <!-- ABA FINANCEIRO -->
+        <section id="tab-financeiro" class="tab-content">
+            <div class="card">
+                <h2>💰 Planejamento Financeiro</h2>
+                <div class="financeiro-grid">
+                    <div class="financeiro-item">
+                        <span>Custo total</span>
+                        <strong id="custoTotal">R$ 0,00</strong>
+                    </div>
+                    <div class="financeiro-item">
+                        <span>Receita potencial</span>
+                        <strong id="receitaTotal">R$ 0,00</strong>
+                    </div>
+                    <div class="financeiro-item">
+                        <span>Lucro estimado</span>
+                        <strong id="lucroTotalCard">R$ 0,00</strong>
+                    </div>
+                    <div class="financeiro-item">
+                        <span>ROI médio</span>
+                        <strong id="roiMedio">0%</strong>
+                    </div>
+                </div>
+                <canvas id="graficoFinanceiro" width="400" height="200"></canvas>
+            </div>
+        </section>
 
-    <!-- Toast -->
-    <div id="toast" class="toast"></div>
+    </main>
 
-    <!-- ===== FIREBASE ===== -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB38cdIUWfhYBsZ5ws98OJoXMb1giTimsQ",
-            authDomain: "agroassist-70d02.firebaseapp.com",
-            projectId: "agroassist-70d02",
-            storageBucket: "agroassist-70d02.firebasestorage.app",
-            messagingSenderId: "216659418233",
-            appId: "1:216659418233:web:0564da8d06842eef7408a8",
-            measurementId: "G-7E0538E971"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-    </script>
+    <!-- NAVEGAÇÃO INFERIOR -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="inicio">
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+        </button>
+        <button class="nav-item" data-tab="mudas">
+            <i class="fas fa-seedling"></i>
+            <span>Mudas</span>
+        </button>
+        <button class="nav-item" data-tab="plantacoes">
+            <i class="fas fa-tree"></i>
+            <span>Plantações</span>
+        </button>
+        <button class="nav-item" data-tab="financeiro">
+            <i class="fas fa-chart-pie"></i>
+            <span>Financeiro</span>
+        </button>
+    </nav>
 
-    <script src="script.js"></script>
-    <script>
-        // Adiciona função toggleMenu para o dropdown
-        function toggleMenu() {
-            const menu = document.getElementById('dropdown-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
+</div>
 
-        // Fecha o menu se clicar fora
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('dropdown-menu');
-            const btn = document.getElementById('btnUser');
-            if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-            }
+<div id="toast" class="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyB38cdIUWfhYBsZ5ws98OJoXMb1giTimsQ",
+        authDomain: "agroassist-70d02.firebaseapp.com",
+        projectId: "agroassist-70d02",
+        storageBucket: "agroassist-70d02.firebasestorage.app",
+        messagingSenderId: "216659418233",
+        appId: "1:216659418233:web:0564da8d06842eef7408a8",
+        measurementId: "G-7E0538E971"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Abas
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + this.dataset.tab).classList.add('active');
         });
-    </script>
+    });
+
+    // Login/Logout UI
+    auth.onAuthStateChanged(user => {
+        const btnLogin = document.getElementById('btnLogin');
+        const userArea = document.getElementById('userArea');
+        const userName = document.getElementById('userName');
+        if (user) {
+            btnLogin.style.display = 'none';
+            userArea.style.display = 'flex';
+            userName.textContent = user.email.split('@')[0];
+        } else {
+            btnLogin.style.display = 'inline-block';
+            userArea.style.display = 'none';
+        }
+    });
+
+    function logout() {
+        if (confirm('Tem certeza que quer sair?')) {
+            auth.signOut().then(() => {
+                mostrarToast('🔓 Logout realizado');
+            });
+        }
+    }
+
+    function mostrarToast(msg, cor = '#1e4a2b') {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.textContent = msg;
+        t.style.background = cor;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Placeholders
+    window.loginComGoogle = function() {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(() => mostrarToast('✅ Login OK'))
+            .catch(err => mostrarToast('❌ ' + err.message, '#c62828'));
+    };
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>
