@@ -44,18 +44,20 @@ const categorias = {
 };
 
 // ============================================
-// TOAST
+// TOAST (reutiliza a função do index.html, mas com fallback)
 // ============================================
-function mostrarToast(mensagem, cor = '#1e4a2b') {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = mensagem;
-    toast.style.background = cor;
-    toast.classList.add('show');
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
+if (typeof mostrarToast !== 'function') {
+    window.mostrarToast = function(mensagem, cor = '#1e4a2b') {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.textContent = mensagem;
+        toast.style.background = cor;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    };
 }
 
 // ============================================
@@ -135,10 +137,8 @@ function buscarClima() {
         .then(data => {
             const tempEl = document.getElementById('temperatura');
             const cidadeEl = document.getElementById('cidade-clima');
-            const descEl = document.getElementById('descricao-clima');
             if (tempEl) tempEl.textContent = Math.round(data.main.temp);
             if (cidadeEl) cidadeEl.textContent = data.name;
-            if (descEl) descEl.textContent = data.weather[0].description;
             const chuva = data.rain ? data.rain['1h'] || data.rain['3h'] : 0;
             const alertaDiv = document.getElementById('alertas-clima');
             if (!alertaDiv) return;
@@ -159,10 +159,8 @@ function buscarClima() {
         .catch(() => {
             const tempEl = document.getElementById('temperatura');
             const cidadeEl = document.getElementById('cidade-clima');
-            const descEl = document.getElementById('descricao-clima');
             if (tempEl) tempEl.textContent = '--';
             if (cidadeEl) cidadeEl.textContent = '--';
-            if (descEl) descEl.textContent = 'Não foi possível carregar o clima.';
         });
 }
 
@@ -188,7 +186,7 @@ function carregarPlantioRecomendado() {
 }
 
 // ============================================
-// 📊 GRÁFICOS (Chart.js)
+// 📊 GRÁFICOS (Chart.js) - SIMPLIFICADO
 // ============================================
 let graficoInstance = null;
 
@@ -197,9 +195,7 @@ function atualizarGrafico() {
     const ctx = document.getElementById('graficoMudas');
     if (!ctx) return;
     const canvas = ctx.getContext('2d');
-    if (graficoInstance) {
-        graficoInstance.destroy();
-    }
+    if (graficoInstance) graficoInstance.destroy();
     const contagem = {};
     mudas.forEach(m => {
         contagem[m.nome] = (contagem[m.nome] || 0) + parseInt(m.quantidade) || 0;
@@ -300,16 +296,14 @@ function pesquisarAvancado() {
 // FUNÇÕES FINANCEIRAS
 // ============================================
 
-// Calcula o lucro estimado por planta
 function calcularLucro(planta, quantidade) {
     if (!planta || !planta.custoMuda || !planta.precoVenda) return 0;
     const custoTotal = planta.custoMuda * quantidade;
-    const producaoEstimada = quantidade * 0.5; // Estimativa: 0.5 kg por muda
+    const producaoEstimada = quantidade * 0.5;
     const receitaTotal = producaoEstimada * planta.precoVenda;
     return receitaTotal - custoTotal;
 }
 
-// Calcula o ROI (Retorno sobre Investimento)
 function calcularROI(planta, quantidade) {
     const lucro = calcularLucro(planta, quantidade);
     const custoTotal = planta.custoMuda * quantidade;
@@ -317,13 +311,9 @@ function calcularROI(planta, quantidade) {
     return (lucro / custoTotal) * 100;
 }
 
-// Calcula o total investido, receita e lucro de todas as mudas
 function calcularResumoFinanceiro() {
     const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    let custoTotal = 0;
-    let receitaTotal = 0;
-    let lucroTotal = 0;
-
+    let custoTotal = 0, receitaTotal = 0, lucroTotal = 0;
     mudas.forEach(m => {
         const planta = Object.values(plantasDB).find(p => p.nome.toLowerCase() === m.nome.toLowerCase());
         if (planta) {
@@ -333,14 +323,10 @@ function calcularResumoFinanceiro() {
             receitaTotal += producaoEstimada * planta.precoVenda;
         }
     });
-
     lucroTotal = receitaTotal - custoTotal;
     return { custoTotal, receitaTotal, lucroTotal };
 }
 
-// ============================================
-// CARREGAR DADOS FINANCEIROS
-// ============================================
 function carregarFinanceiro() {
     const resumo = calcularResumoFinanceiro();
     const custoEl = document.getElementById('custoTotal');
@@ -352,8 +338,7 @@ function carregarFinanceiro() {
     if (lucroEl) lucroEl.textContent = `R$ ${resumo.lucroTotal.toFixed(2)}`;
 
     const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
-    let roiTotal = 0;
-    let count = 0;
+    let roiTotal = 0, count = 0;
     mudas.forEach(m => {
         const planta = Object.values(plantasDB).find(p => p.nome.toLowerCase() === m.nome.toLowerCase());
         if (planta) {
@@ -375,18 +360,14 @@ function atualizarGraficoFinanceiro() {
     const ctx = document.getElementById('graficoFinanceiro');
     if (!ctx) return;
     const canvas = ctx.getContext('2d');
-    if (graficoFinanceiroInstance) {
-        graficoFinanceiroInstance.destroy();
-    }
+    if (graficoFinanceiroInstance) graficoFinanceiroInstance.destroy();
 
     const resumo = {};
     mudas.forEach(m => {
         const planta = Object.values(plantasDB).find(p => p.nome.toLowerCase() === m.nome.toLowerCase());
         if (planta) {
             const qtd = parseInt(m.quantidade) || 0;
-            if (!resumo[m.nome]) {
-                resumo[m.nome] = { custo: 0, receita: 0, lucro: 0 };
-            }
+            if (!resumo[m.nome]) resumo[m.nome] = { custo: 0, receita: 0, lucro: 0 };
             resumo[m.nome].custo += planta.custoMuda * qtd;
             const producaoEstimada = qtd * 0.5;
             resumo[m.nome].receita += producaoEstimada * planta.precoVenda;
@@ -434,61 +415,13 @@ function atualizarGraficoFinanceiro() {
 }
 
 // ============================================
-// FIREBASE AUTH (login)
-// ============================================
-
-function loginComGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-        .then(() => {
-            mostrarToast('✅ Login realizado com sucesso!', '#2e7d32');
-        })
-        .catch(erro => {
-            mostrarToast('❌ Erro no login: ' + erro.message, '#c62828');
-        });
-}
-
-function logout() {
-    if (confirm('Tem certeza que quer sair?')) {
-        firebase.auth().signOut().then(() => {
-            mostrarToast('🔓 Logout realizado', '#5d6d5d');
-        });
-    }
-}
-
-// Monitora o estado do usuário
-firebase.auth().onAuthStateChanged(user => {
-    const btnLogin = document.getElementById('btnLogin');
-    const btnLogout = document.getElementById('btnLogout');
-    const userEmail = document.getElementById('userEmail');
-
-    if (user) {
-        if (btnLogin) btnLogin.style.display = 'none';
-        if (btnLogout) btnLogout.style.display = 'inline-block';
-        if (userEmail) userEmail.textContent = '👤 ' + user.email;
-        carregarMudasFirestore();
-        carregarPlantacoesFirestore();
-    } else {
-        if (btnLogin) btnLogin.style.display = 'inline-block';
-        if (btnLogout) btnLogout.style.display = 'none';
-        if (userEmail) userEmail.textContent = '';
-        const mudaContainer = document.getElementById('lista-mudas');
-        const plantContainer = document.getElementById('lista-plantacoes');
-        if (mudaContainer) mudaContainer.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas mudas.</p>';
-        if (plantContainer) plantContainer.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
-    }
-});
-
-// ============================================
-// FIREBASE FIRESTORE (salvar/carregar dados)
+// FIRESTORE FUNCTIONS
 // ============================================
 
 function salvarMudaFirestore() {
     const nome = document.getElementById('nomeMuda');
     const quantidade = document.getElementById('quantidadeMuda');
     const data = document.getElementById('dataMuda');
-    const obs = document.getElementById('obsMuda');
-    const categoria = document.getElementById('categoriaMuda');
     if (!nome || !quantidade || !data) {
         mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
         return;
@@ -496,8 +429,8 @@ function salvarMudaFirestore() {
     const nomeVal = nome.value.trim();
     const qtdVal = quantidade.value.trim();
     const dataVal = data.value;
-    const obsVal = obs ? obs.value.trim() : '';
-    const catVal = categoria ? categoria.value : 'hortalica';
+    const obsVal = document.getElementById('obsMuda') ? document.getElementById('obsMuda').value.trim() : '';
+    const catVal = document.getElementById('categoriaMuda') ? document.getElementById('categoriaMuda').value : 'hortalica';
 
     if (!nomeVal || !qtdVal || !dataVal) {
         mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
@@ -510,13 +443,13 @@ function salvarMudaFirestore() {
         return;
     }
 
-    const muda = { 
-        nome: nomeVal, 
-        quantidade: qtdVal, 
-        data: dataVal, 
-        obs: obsVal, 
-        categoria: catVal, 
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
+    const muda = {
+        nome: nomeVal,
+        quantidade: qtdVal,
+        data: dataVal,
+        obs: obsVal,
+        categoria: catVal,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     db.collection('usuarios').doc(user.uid).collection('mudas').add(muda)
@@ -557,8 +490,7 @@ function carregarMudasFirestore() {
                 const diasColheita = m.diasColheita || 90;
                 const diasRestantes = Math.max(0, diasColheita - diasDecorridos);
                 const progresso = Math.min(100, Math.round((diasDecorridos / diasColheita) * 100));
-                let statusCor = '#2e7d32';
-                let statusTexto = '🌱 No prazo';
+                let statusCor = '#2e7d32', statusTexto = '🌱 No prazo';
                 if (diasRestantes <= 5 && diasRestantes > 0) {
                     statusCor = '#ff9800';
                     statusTexto = '⚠️ Próximo da colheita';
@@ -626,8 +558,6 @@ function salvarPlantacaoFirestore() {
     const nome = document.getElementById('nomePlanta');
     const quantidade = document.getElementById('quantidadePlanta');
     const data = document.getElementById('dataTransplante');
-    const obs = document.getElementById('obsPlantacao');
-    const categoria = document.getElementById('categoriaPlanta');
     if (!nome || !quantidade || !data) {
         mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
         return;
@@ -635,8 +565,8 @@ function salvarPlantacaoFirestore() {
     const nomeVal = nome.value.trim();
     const qtdVal = quantidade.value.trim();
     const dataVal = data.value;
-    const obsVal = obs ? obs.value.trim() : '';
-    const catVal = categoria ? categoria.value : 'hortalica';
+    const obsVal = document.getElementById('obsPlantacao') ? document.getElementById('obsPlantacao').value.trim() : '';
+    const catVal = document.getElementById('categoriaPlanta') ? document.getElementById('categoriaPlanta').value : 'hortalica';
 
     if (!nomeVal || !qtdVal || !dataVal) {
         mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
@@ -649,13 +579,13 @@ function salvarPlantacaoFirestore() {
         return;
     }
 
-    const plantacao = { 
-        nome: nomeVal, 
-        quantidade: qtdVal, 
-        data: dataVal, 
-        obs: obsVal, 
-        categoria: catVal, 
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
+    const plantacao = {
+        nome: nomeVal,
+        quantidade: qtdVal,
+        data: dataVal,
+        obs: obsVal,
+        categoria: catVal,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     db.collection('usuarios').doc(user.uid).collection('plantacoes').add(plantacao)
@@ -731,27 +661,29 @@ function editarPlantacao(id) {
 }
 
 // ============================================
-// CONTADORES FIRESTORE
+// CONTADORES
 // ============================================
 function atualizarContadoresFirestore() {
     const user = firebase.auth().currentUser;
     if (!user) return;
-
     db.collection('usuarios').doc(user.uid).collection('mudas').get()
         .then(snapshot => {
             const cM = document.getElementById('contadorMudas');
             if (cM) cM.textContent = snapshot.size;
+            const cMCard = document.getElementById('contadorMudasCard');
+            if (cMCard) cMCard.textContent = snapshot.size;
         });
-
     db.collection('usuarios').doc(user.uid).collection('plantacoes').get()
         .then(snapshot => {
             const cP = document.getElementById('contadorPlantacoes');
             if (cP) cP.textContent = snapshot.size;
+            const cPCard = document.getElementById('contadorPlantacoesCard');
+            if (cPCard) cPCard.textContent = snapshot.size;
         });
 }
 
 // ============================================
-// LIMPAR TUDO (LOCALSTORAGE)
+// LIMPAR TUDO
 // ============================================
 function limparMudas() {
     if (!confirm('⚠️ Apagar TODAS as mudas?')) return;
