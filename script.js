@@ -6,34 +6,34 @@ const CIDADE = 'Belo Horizonte';
 const PAIS = 'BR';
 
 // ============================================
-// BANCO DE DADOS DAS PLANTAS (25 plantas)
+// BANCO DE DADOS DAS PLANTAS (COM DADOS FINANCEIROS)
 // ============================================
 const plantasDB = {
-    tomate: { nome: 'Tomate', diasColheita: 90, epoca: [8, 9, 10, 11, 12, 1, 2], categoria: 'frutifera' },
-    alface: { nome: 'Alface', diasColheita: 60, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
-    pimenta: { nome: 'Pimenta', diasColheita: 100, epoca: [9, 10, 11, 12, 1, 2, 3], categoria: 'frutifera' },
-    couve: { nome: 'Couve', diasColheita: 75, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
-    cebolinha: { nome: 'Cebolinha', diasColheita: 70, epoca: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'tempero' },
-    abobora: { nome: 'Abóbora', diasColheita: 100, epoca: [9, 10, 11, 12, 1, 2, 3], categoria: 'frutifera' },
-    alho: { nome: 'Alho', diasColheita: 100, epoca: [2, 3, 4, 5, 6], categoria: 'tempero' },
-    batata: { nome: 'Batata', diasColheita: 100, epoca: [4, 5], categoria: 'hortalica' },
-    beterraba: { nome: 'Beterraba', diasColheita: 70, epoca: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'hortalica' },
-    brocolis: { nome: 'Brócolis', diasColheita: 80, epoca: [2, 3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
-    cebola: { nome: 'Cebola', diasColheita: 150, epoca: [2, 3, 4, 5], categoria: 'hortalica' },
-    cenoura: { nome: 'Cenoura', diasColheita: 90, epoca: [3, 4, 5, 6, 7, 10, 11, 12], categoria: 'hortalica' },
-    espinafre: { nome: 'Espinafre', diasColheita: 60, epoca: [2, 3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica' },
-    feijao: { nome: 'Feijão', diasColheita: 80, epoca: [9, 10, 11], categoria: 'grao' },
-    gengibre: { nome: 'Gengibre', diasColheita: 240, epoca: [9, 10, 11, 12], categoria: 'tempero' },
-    goiaba: { nome: 'Goiaba', diasColheita: 450, epoca: [9, 10, 11], categoria: 'frutifera' },
-    laranja: { nome: 'Laranja', diasColheita: 900, epoca: [10, 11, 12, 1, 2, 3], categoria: 'frutifera' },
-    manga: { nome: 'Manga', diasColheita: 900, epoca: [1, 2], categoria: 'frutifera' },
-    manjericao: { nome: 'Manjericão', diasColheita: 50, epoca: [9], categoria: 'tempero' },
-    milho: { nome: 'Milho', diasColheita: 100, epoca: [9, 10, 11], categoria: 'grao' },
-    morango: { nome: 'Morango', diasColheita: 70, epoca: [3, 4, 5], categoria: 'frutifera' },
-    pepino: { nome: 'Pepino', diasColheita: 50, epoca: [9, 10, 11, 12, 1, 2], categoria: 'frutifera' },
-    rucula: { nome: 'Rúcula', diasColheita: 40, epoca: [3, 4, 5, 6, 7, 8], categoria: 'hortalica' },
-    salsa: { nome: 'Salsa', diasColheita: 60, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'tempero' },
-    uva: { nome: 'Uva', diasColheita: 900, epoca: [6, 7, 8], categoria: 'frutifera' }
+    tomate: { nome: 'Tomate', diasColheita: 90, epoca: [8, 9, 10, 11, 12, 1, 2], categoria: 'frutifera', custoMuda: 1.5, precoVenda: 6.5, espacamento: '50x100 cm', mesesPlantio: 'Ago-Jan' },
+    alface: { nome: 'Alface', diasColheita: 45, epoca: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'hortalica', custoMuda: 0.4, precoVenda: 4.0, espacamento: '30x30 cm', mesesPlantio: 'Ano todo' },
+    pimenta: { nome: 'Pimenta', diasColheita: 120, epoca: [9, 10, 11, 12, 1, 2], categoria: 'frutifera', custoMuda: 1.2, precoVenda: 12.0, espacamento: '40x60 cm', mesesPlantio: 'Set-Fev' },
+    couve: { nome: 'Couve', diasColheita: 70, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica', custoMuda: 0.8, precoVenda: 5.0, espacamento: '40x80 cm', mesesPlantio: 'Mar-Set' },
+    cebolinha: { nome: 'Cebolinha', diasColheita: 60, epoca: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'tempero', custoMuda: 0.5, precoVenda: 8.0, espacamento: '10x20 cm', mesesPlantio: 'Ano todo' },
+    cenoura: { nome: 'Cenoura', diasColheita: 80, epoca: [4, 5, 6, 7], categoria: 'hortalica', custoMuda: 0.3, precoVenda: 4.5, espacamento: '10x20 cm', mesesPlantio: 'Abr-Jul' },
+    feijao: { nome: 'Feijão', diasColheita: 75, epoca: [10, 11, 12, 1, 2], categoria: 'grao', custoMuda: 0.6, precoVenda: 7.0, espacamento: '20x40 cm', mesesPlantio: 'Out-Fev' },
+    abobora: { nome: 'Abóbora', diasColheita: 100, epoca: [9, 10, 11, 12, 1, 2, 3], categoria: 'frutifera', custoMuda: 2.0, precoVenda: 3.5, espacamento: '100x150 cm', mesesPlantio: 'Set-Mar' },
+    alho: { nome: 'Alho', diasColheita: 100, epoca: [2, 3, 4, 5, 6], categoria: 'tempero', custoMuda: 1.0, precoVenda: 15.0, espacamento: '10x20 cm', mesesPlantio: 'Fev-Jun' },
+    batata: { nome: 'Batata', diasColheita: 100, epoca: [4, 5], categoria: 'hortalica', custoMuda: 1.0, precoVenda: 4.0, espacamento: '30x60 cm', mesesPlantio: 'Abr-Mai' },
+    beterraba: { nome: 'Beterraba', diasColheita: 70, epoca: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], categoria: 'hortalica', custoMuda: 0.5, precoVenda: 5.0, espacamento: '15x30 cm', mesesPlantio: 'Ano todo' },
+    brocolis: { nome: 'Brócolis', diasColheita: 80, epoca: [2, 3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica', custoMuda: 0.8, precoVenda: 6.0, espacamento: '40x60 cm', mesesPlantio: 'Fev-Set' },
+    cebola: { nome: 'Cebola', diasColheita: 150, epoca: [2, 3, 4, 5], categoria: 'hortalica', custoMuda: 1.0, precoVenda: 6.0, espacamento: '10x20 cm', mesesPlantio: 'Fev-Mai' },
+    espinafre: { nome: 'Espinafre', diasColheita: 60, epoca: [2, 3, 4, 5, 6, 7, 8, 9], categoria: 'hortalica', custoMuda: 0.5, precoVenda: 7.0, espacamento: '20x30 cm', mesesPlantio: 'Fev-Set' },
+    gengibre: { nome: 'Gengibre', diasColheita: 240, epoca: [9, 10, 11, 12], categoria: 'tempero', custoMuda: 1.5, precoVenda: 10.0, espacamento: '20x30 cm', mesesPlantio: 'Set-Dez' },
+    goiaba: { nome: 'Goiaba', diasColheita: 450, epoca: [9, 10, 11], categoria: 'frutifera', custoMuda: 3.0, precoVenda: 4.0, espacamento: '300x400 cm', mesesPlantio: 'Set-Nov' },
+    laranja: { nome: 'Laranja', diasColheita: 900, epoca: [10, 11, 12, 1, 2, 3], categoria: 'frutifera', custoMuda: 5.0, precoVenda: 3.0, espacamento: '400x500 cm', mesesPlantio: 'Out-Mar' },
+    manga: { nome: 'Manga', diasColheita: 900, epoca: [1, 2], categoria: 'frutifera', custoMuda: 4.0, precoVenda: 4.5, espacamento: '500x600 cm', mesesPlantio: 'Jan-Fev' },
+    manjericao: { nome: 'Manjericão', diasColheita: 50, epoca: [9], categoria: 'tempero', custoMuda: 0.5, precoVenda: 20.0, espacamento: '20x20 cm', mesesPlantio: 'Set' },
+    milho: { nome: 'Milho', diasColheita: 100, epoca: [9, 10, 11], categoria: 'grao', custoMuda: 0.8, precoVenda: 3.0, espacamento: '80x100 cm', mesesPlantio: 'Set-Nov' },
+    morango: { nome: 'Morango', diasColheita: 70, epoca: [3, 4, 5], categoria: 'frutifera', custoMuda: 1.5, precoVenda: 12.0, espacamento: '30x30 cm', mesesPlantio: 'Mar-Mai' },
+    pepino: { nome: 'Pepino', diasColheita: 50, epoca: [9, 10, 11, 12, 1, 2], categoria: 'frutifera', custoMuda: 1.0, precoVenda: 4.0, espacamento: '40x80 cm', mesesPlantio: 'Set-Fev' },
+    rucula: { nome: 'Rúcula', diasColheita: 40, epoca: [3, 4, 5, 6, 7, 8], categoria: 'hortalica', custoMuda: 0.4, precoVenda: 6.0, espacamento: '15x25 cm', mesesPlantio: 'Mar-Ago' },
+    salsa: { nome: 'Salsa', diasColheita: 60, epoca: [3, 4, 5, 6, 7, 8, 9], categoria: 'tempero', custoMuda: 0.5, precoVenda: 10.0, espacamento: '10x20 cm', mesesPlantio: 'Mar-Set' },
+    uva: { nome: 'Uva', diasColheita: 900, epoca: [6, 7, 8], categoria: 'frutifera', custoMuda: 6.0, precoVenda: 5.0, espacamento: '200x300 cm', mesesPlantio: 'Jun-Ago' }
 };
 
 const categorias = {
@@ -282,6 +282,137 @@ function pesquisarAvancado() {
 }
 
 // ============================================
+// FUNÇÕES FINANCEIRAS
+// ============================================
+
+// Calcula o lucro estimado por planta
+function calcularLucro(planta, quantidade) {
+    if (!planta || !planta.custoMuda || !planta.precoVenda) return 0;
+    const custoTotal = planta.custoMuda * quantidade;
+    const producaoEstimada = quantidade * 0.5; // Estimativa: 0.5 kg por muda
+    const receitaTotal = producaoEstimada * planta.precoVenda;
+    return receitaTotal - custoTotal;
+}
+
+// Calcula o ROI (Retorno sobre Investimento)
+function calcularROI(planta, quantidade) {
+    const lucro = calcularLucro(planta, quantidade);
+    const custoTotal = planta.custoMuda * quantidade;
+    if (custoTotal === 0) return 0;
+    return (lucro / custoTotal) * 100;
+}
+
+// Calcula o total investido, receita e lucro de todas as mudas
+function calcularResumoFinanceiro() {
+    const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
+    let custoTotal = 0;
+    let receitaTotal = 0;
+    let lucroTotal = 0;
+
+    mudas.forEach(m => {
+        const planta = Object.values(plantasDB).find(p => p.nome.toLowerCase() === m.nome.toLowerCase());
+        if (planta) {
+            const qtd = parseInt(m.quantidade) || 0;
+            custoTotal += planta.custoMuda * qtd;
+            const producaoEstimada = qtd * 0.5;
+            receitaTotal += producaoEstimada * planta.precoVenda;
+        }
+    });
+
+    lucroTotal = receitaTotal - custoTotal;
+    return { custoTotal, receitaTotal, lucroTotal };
+}
+
+// ============================================
+// CARREGAR DADOS FINANCEIROS
+// ============================================
+function carregarFinanceiro() {
+    const resumo = calcularResumoFinanceiro();
+    document.getElementById('custoTotal').textContent = `R$ ${resumo.custoTotal.toFixed(2)}`;
+    document.getElementById('receitaTotal').textContent = `R$ ${resumo.receitaTotal.toFixed(2)}`;
+    document.getElementById('lucroTotal').textContent = `R$ ${resumo.lucroTotal.toFixed(2)}`;
+
+    const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
+    let roiTotal = 0;
+    let count = 0;
+    mudas.forEach(m => {
+        const planta = Object.values(plantasDB).find(p => p.nome.toLowerCase() === m.nome.toLowerCase());
+        if (planta) {
+            roiTotal += calcularROI(planta, parseInt(m.quantidade) || 0);
+            count++;
+        }
+    });
+    const roiMedio = count > 0 ? roiTotal / count : 0;
+    document.getElementById('roiMedio').textContent = roiMedio.toFixed(1) + '%';
+}
+
+// ============================================
+// GRÁFICO FINANCEIRO
+// ============================================
+let graficoFinanceiroInstance = null;
+
+function atualizarGraficoFinanceiro() {
+    const mudas = JSON.parse(localStorage.getItem('mudas')) || [];
+    const ctx = document.getElementById('graficoFinanceiro').getContext('2d');
+    if (graficoFinanceiroInstance) {
+        graficoFinanceiroInstance.destroy();
+    }
+
+    const resumo = {};
+    mudas.forEach(m => {
+        const planta = Object.values(plantasDB).find(p => p.nome.toLowerCase() === m.nome.toLowerCase());
+        if (planta) {
+            const qtd = parseInt(m.quantidade) || 0;
+            if (!resumo[m.nome]) {
+                resumo[m.nome] = { custo: 0, receita: 0, lucro: 0 };
+            }
+            resumo[m.nome].custo += planta.custoMuda * qtd;
+            const producaoEstimada = qtd * 0.5;
+            resumo[m.nome].receita += producaoEstimada * planta.precoVenda;
+            resumo[m.nome].lucro = resumo[m.nome].receita - resumo[m.nome].custo;
+        }
+    });
+
+    const labels = Object.keys(resumo);
+    const custoData = labels.map(l => resumo[l].custo);
+    const receitaData = labels.map(l => resumo[l].receita);
+    const lucroData = labels.map(l => resumo[l].lucro);
+
+    if (labels.length === 0) {
+        graficoFinanceiroInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Nenhuma muda'],
+                datasets: [
+                    { label: 'Custo', data: [0], backgroundColor: '#c62828' },
+                    { label: 'Receita', data: [0], backgroundColor: '#2e7d32' },
+                    { label: 'Lucro', data: [0], backgroundColor: '#f9a825' }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'top' } } }
+        });
+        return;
+    }
+
+    graficoFinanceiroInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Custo (R$)', data: custoData, backgroundColor: '#c62828' },
+                { label: 'Receita (R$)', data: receitaData, backgroundColor: '#2e7d32' },
+                { label: 'Lucro (R$)', data: lucroData, backgroundColor: '#f9a825' }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// ============================================
 // FIREBASE AUTH (login)
 // ============================================
 
@@ -297,9 +428,11 @@ function loginComGoogle() {
 }
 
 function logout() {
-    firebase.auth().signOut().then(() => {
-        mostrarToast('🔓 Logout realizado', '#5d6d5d');
-    });
+    if (confirm('Tem certeza que quer sair?')) {
+        firebase.auth().signOut().then(() => {
+            mostrarToast('🔓 Logout realizado', '#5d6d5d');
+        });
+    }
 }
 
 // Monitora o estado do usuário
@@ -312,14 +445,12 @@ firebase.auth().onAuthStateChanged(user => {
         btnLogin.style.display = 'none';
         btnLogout.style.display = 'inline-block';
         userEmail.textContent = '👤 ' + user.email;
-        // Carrega os dados do Firestore
         carregarMudasFirestore();
         carregarPlantacoesFirestore();
     } else {
         btnLogin.style.display = 'inline-block';
         btnLogout.style.display = 'none';
         userEmail.textContent = '';
-        // Mostra mensagem de bloqueio
         document.getElementById('lista-mudas').innerHTML = '<p class="empty-message">🔒 Faça login para ver suas mudas.</p>';
         document.getElementById('lista-plantacoes').innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
     }
@@ -467,141 +598,4 @@ function salvarPlantacaoFirestore() {
     const categoria = document.getElementById('categoriaPlanta').value;
 
     if (!nome || !quantidade || !data) {
-        mostrarToast('⚠️ Preencha todos os campos obrigatórios!', '#c62828');
-        return;
-    }
-
-    const user = firebase.auth().currentUser;
-    if (!user) {
-        mostrarToast('⚠️ Faça login primeiro!', '#c62828');
-        return;
-    }
-
-    const plantacao = { 
-        nome, 
-        quantidade, 
-        data, 
-        obs, 
-        categoria, 
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
-    };
-
-    db.collection('usuarios').doc(user.uid).collection('plantacoes').add(plantacao)
-        .then(() => {
-            mostrarToast('✅ Plantação salva na nuvem!', '#2e7d32');
-            window.location.href = 'index.html';
-        })
-        .catch(erro => {
-            mostrarToast('❌ Erro ao salvar: ' + erro.message, '#c62828');
-        });
-}
-
-function carregarPlantacoesFirestore() {
-    const container = document.getElementById('lista-plantacoes');
-    if (!container) return;
-
-    const user = firebase.auth().currentUser;
-    if (!user) {
-        container.innerHTML = '<p class="empty-message">🔒 Faça login para ver suas plantações.</p>';
-        return;
-    }
-
-    db.collection('usuarios').doc(user.uid).collection('plantacoes').orderBy('criadoEm', 'desc').get()
-        .then(snapshot => {
-            if (snapshot.empty) {
-                container.innerHTML = '<p class="empty-message">🌿 Você ainda não tem plantações.</p>';
-                return;
-            }
-
-            let html = '';
-            snapshot.forEach(doc => {
-                const p = doc.data();
-                const cat = categorias[p.categoria] || '🌿';
-                html += `
-                    <div class="card-item">
-                        <div class="info">
-                            <h3>${cat} ${p.nome}</h3>
-                            <p>📦 ${p.quantidade} unidade(s)</p>
-                            <p>📅 Transplante: ${p.data}</p>
-                            ${p.obs ? `<p class="obs">📝 ${p.obs}</p>` : ''}
-                        </div>
-                        <div class="actions">
-                            <button onclick="editarPlantacao('${doc.id}')">✏️ Editar</button>
-                            <button onclick="removerPlantacaoFirestore('${doc.id}')">❌ Remover</button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-            atualizarContadoresFirestore();
-        })
-        .catch(erro => {
-            mostrarToast('❌ Erro ao carregar: ' + erro.message, '#c62828');
-        });
-}
-
-function removerPlantacaoFirestore(id) {
-    if (!confirm('Remover esta plantação?')) return;
-    const user = firebase.auth().currentUser;
-    if (!user) return;
-    db.collection('usuarios').doc(user.uid).collection('plantacoes').doc(id).delete()
-        .then(() => {
-            mostrarToast('🗑️ Plantação removida', '#5d6d5d');
-            carregarPlantacoesFirestore();
-        })
-        .catch(erro => {
-            mostrarToast('❌ Erro ao remover: ' + erro.message, '#c62828');
-        });
-}
-
-function editarPlantacao(id) {
-    window.location.href = `adicionarplant.html?edit=${id}`;
-}
-
-// ============================================
-// CONTADORES FIRESTORE
-// ============================================
-function atualizarContadoresFirestore() {
-    const user = firebase.auth().currentUser;
-    if (!user) return;
-
-    db.collection('usuarios').doc(user.uid).collection('mudas').get()
-        .then(snapshot => {
-            const cM = document.getElementById('contadorMudas');
-            if (cM) cM.textContent = snapshot.size;
-        });
-
-    db.collection('usuarios').doc(user.uid).collection('plantacoes').get()
-        .then(snapshot => {
-            const cP = document.getElementById('contadorPlantacoes');
-            if (cP) cP.textContent = snapshot.size;
-        });
-}
-
-// ============================================
-// LIMPAR TUDO (LOCALSTORAGE)
-// ============================================
-function limparMudas() {
-    if (!confirm('⚠️ Apagar TODAS as mudas?')) return;
-    localStorage.removeItem('mudas');
-    carregarMudasFirestore();
-    mostrarToast('🧹 Mudas removidas', '#c62828');
-}
-
-function limparPlantacoes() {
-    if (!confirm('⚠️ Apagar TODAS as plantações?')) return;
-    localStorage.removeItem('plantacoes');
-    carregarPlantacoesFirestore();
-    mostrarToast('🧹 Plantações removidas', '#c62828');
-}
-
-// ============================================
-// INICIALIZAÇÃO
-// ============================================
-window.onload = function() {
-    calcularFaseLua();
-    buscarClima();
-    carregarPlantioRecomendado();
-    mostrarDica();
-    atualizarGrafico();
-};
+        mostrarToast('⚠️ Preencha

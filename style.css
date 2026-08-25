@@ -476,3 +476,22 @@ ul li a:hover {
         font-size: 1rem;
     }
 }
+/* ===== CARD FINANCEIRO ===== */
+#card-financeiro {
+    background: linear-gradient(135deg, #f5f0e8, #e8f0e8);
+    border-left: 6px solid #f9a825;
+}
+
+#resumo-financeiro {
+    margin: 8px 0;
+}
+
+#resumo-financeiro p {
+    margin: 4px 0;
+}
+
+#graficoFinanceiro {
+    max-height: 200px;
+    max-width: 100%;
+    margin-top: 12px;
+}
